@@ -2,10 +2,12 @@
 Cada
 ====
 
-.. image:: https://pypip.in/v/cada/badge.png
-    :target: https://crate.io/packages/cada
-.. image:: https://pypip.in/d/cada/badge.png
-    :target: https://crate.io/packages/cada
+.. image:: https://pypip.in/version/cada/badge.png
+    :target: https://pypi.python.org/pypi/cada/
+    :alt: Latest Version
+.. image:: https://pypip.in/download/cada/badge.png
+    :target: https://pypi.python.org/pypi/cada/
+    :alt: Downloads
 
 A simplistic interface to search and consult CADA advices.
 
