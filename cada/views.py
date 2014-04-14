@@ -171,7 +171,7 @@ def alert(id):
             attachments=[attachment]
         )
         flash(
-            "<strong>Merci pour voter contribution!</strong> Nous avons bien pris en compte votre signalement.",
+            "<strong>Merci pour votre contribution!</strong> Nous avons bien pris en compte votre signalement.",
             'success'
         )
         return redirect(url_for('display', id=advice.id))
