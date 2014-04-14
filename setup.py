@@ -61,7 +61,6 @@ setup(
     description='Search and consult CADA advices',
     long_description=long_description,
     url='https://github.com/etalab/cada',
-    download_url='http://pypi.python.org/pypi/cada',
     author='Axel Haustant',
     author_email='axel@data.gouv.fr',
     packages=find_packages(),
