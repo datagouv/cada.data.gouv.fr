@@ -1,0 +1,11 @@
+<p>
+Un défaut d'anonymisation a été signalé sur
+l'<a href="{{ url_for('display', id=advice.id, _external=True) }}">avis CADA {{advice.id}}</a>.
+</p>
+
+{% if details %}
+<p><b>Informations complémentaires fournies par le lanceur d'alerte:</b></p>
+<p><i>{{details}}</i></p>
+
+<p>L'avis en question est en pièce jointe au format CSV.</p>
+{% endif %}

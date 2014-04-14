@@ -1,0 +1,309 @@
+html, body {
+   margin:0;
+   padding:0;
+   height:100%;
+}
+
+ul.search-result li {
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+ul.search-result li:not(:last-child) {
+    border-bottom: 1px solid lightGray;
+}
+
+ul.search-result li a.title {
+    font-size: 1.2em;
+}
+
+ul.search-result li .subtitle {
+    font-size: 1.1em;
+    font-style: italic;
+}
+
+ul.search-result li .subtitle span {
+    font-size: 0.8em;
+    margin-right: 2px;
+    top: 0;
+}
+
+.lead.subject {
+    font-size: 1.1em;
+    font-style: italic;
+    font-weight: bold
+}
+
+.label .close-icon {
+    color: white;
+}
+
+.label .close-icon:hover {
+    color: red;
+}
+
+.label-list .label {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.raw {
+    white-space: pre-wrap;
+}
+
+.panel .panel-heading span.glyphicon {
+    width: 16px;
+    margin-right: 4px;
+    text-align: center;
+}
+
+.panel .panel-body {
+    padding: 10px;
+}
+
+.panel .list-group .list-group-item {
+    font-size: 0.9em;
+}
+
+.page-header {
+    margin: 0 0 5px;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.megasearch {
+    margin: 30px 0;
+    padding: 0;
+}
+
+.tags {
+    margin: 0;
+    padding: 0;
+    zoom: 1;
+    list-style: none;
+}
+
+.tags:before, .tags:after {
+    content: '';
+    display: table;
+}
+
+.tags:after {
+    clear: both;
+}
+
+.tags li {
+    position: relative;
+    float: left;
+    margin: 0 12px 8px 0;
+}
+
+.tags li:active {
+    margin-top: 1px;
+    margin-bottom: 7px;
+}
+
+.tags li:after {
+    content: '';
+    z-index: 2;
+    position: absolute;
+    top: 10px;
+    right: -2px;
+    width: 5px;
+    height: 6px;
+    opacity: .95;
+    background: #eb6b22;
+    border-radius: 3px 0 0 3px;
+    -webkit-box-shadow: inset 1px 0 #99400e;
+    box-shadow: inset 1px 0 #99400e;
+}
+
+.tags a, .tags span {
+    display: block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.tags a {
+    height: 26px;
+    line-height: 23px;
+    padding: 0 9px 0 8px;
+    font-size: 12px;
+    color: #555;
+    text-decoration: none;
+    text-shadow: 0 1px white;
+    background: #fafafa;
+    border-width: 1px 0 1px 1px;
+    border-style: solid;
+    border-color: #dadada #d2d2d2 #c5c5c5;
+    border-radius: 3px 0 0 3px;
+    background-image: -webkit-linear-gradient(top, #fcfcfc, #f0f0f0);
+    background-image: -moz-linear-gradient(top, #fcfcfc, #f0f0f0);
+    background-image: -o-linear-gradient(top, #fcfcfc, #f0f0f0);
+    background-image: linear-gradient(to bottom, #fcfcfc, #f0f0f0);
+    -webkit-box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tags a:hover span {
+    padding: 0 7px 0 6px;
+    max-width: 40px;
+    -webkit-box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15), 1px 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15), 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.tags span {
+    position: absolute;
+    top: 1px;
+    left: 100%;
+    z-index: 2;
+    overflow: hidden;
+    max-width: 0;
+    height: 24px;
+    line-height: 21px;
+    padding: 0 0 0 2px;
+    color: white;
+    text-shadow: 0 -1px rgba(0, 0, 0, 0.3);
+    background: #eb6b22;
+    border: 1px solid;
+    border-color: #d15813 #c85412 #bf5011;
+    border-radius: 0 2px 2px 0;
+    opacity: .95;
+    background-image: -webkit-linear-gradient(top, #ed7b39, #df5e14);
+    background-image: -moz-linear-gradient(top, #ed7b39, #df5e14);
+    background-image: -o-linear-gradient(top, #ed7b39, #df5e14);
+    background-image: linear-gradient(to bottom, #ed7b39, #df5e14);
+    -webkit-transition: 0.3s ease-out;
+    -moz-transition: 0.3s ease-out;
+    -o-transition: 0.3s ease-out;
+    transition: 0.3s ease-out;
+    -webkit-transition-property: padding, max-width;
+    -moz-transition-property: padding, max-width;
+    -o-transition-property: padding, max-width;
+    transition-property: padding, max-width;
+}
+
+.blue li:after {
+    background: #56a3d5;
+    -webkit-box-shadow: inset 1px 0 #276f9e;
+    box-shadow: inset 1px 0 #276f9e;
+}
+.blue span {
+    background: #56a3d5;
+    border-color: #3591cd #318cc7 #2f86be;
+    background-image: -webkit-linear-gradient(top, #6aaeda, #4298d0);
+    background-image: -moz-linear-gradient(top, #6aaeda, #4298d0);
+    background-image: -o-linear-gradient(top, #6aaeda, #4298d0);
+    background-image: linear-gradient(to bottom, #6aaeda, #4298d0);
+}
+
+
+/**
+ * Tree list items
+ */
+
+.list-group-item span.glyphicon-folder-open {
+    margin-right: 5px;
+}
+.list-group-item span.glyphicon-folder-close {
+    margin-right: 2px;
+}
+
+.list-group-item.nested {
+    padding-left: 30px;
+}
+
+.panel .topics .label {
+    display: inline-block;
+}
+
+.panel .topics .topic span.glyphicon-folder-open {
+    margin-right: 5px;
+}
+
+.panel .topics .topic span.glyphicon-folder-close {
+    margin-right: 2px;
+}
+
+.panel .topics .subtopic {
+    margin-left: 10px;
+}
+
+
+.page {
+    min-height: 450px;
+    padding-bottom: 30px;
+}
+
+
+/*footer style*/
+section.footer {
+    padding-top: 0px;
+    padding-bottom: 40px;
+    background-color: #26353f;
+    color: white;
+    font-size: 13px;
+}
+
+section.footer a {
+    font-weight: bold;
+    color: white;
+}
+
+section.footer h5 {
+    font-family: @title-font;
+    font-size: 15px;
+    margin: 26px 0px 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+section.footer ul {
+    padding: 0;
+    list-style: none;
+    line-height: 1.78em;
+}
+
+section.footer li a {
+    font-weight: normal;
+}
+
+section.footer .logo {
+    margin: 20px 0px 8px;
+}
+
+section.footer footer.row {
+    position: relative;
+}
+
+section.footer .bottom-right {
+    position: absolute;
+    bottom: -40px;
+    right: 0px;
+}
+
+section.footer .bottom-right a {
+    background-color: rgba(255, 255, 255, 0.42);
+    padding: 3px 10px;
+}
+
+.main-wrapper {
+   min-height:100%;
+   position: relative;
+   margin: 0;
+   padding: 0;
+}
+
+.main-wrapper > .container {
+   padding-bottom: 241px;   /* Height of the footer */
+}
+
+section.footer {
+   position:absolute;
+   bottom:0;
+   width:100%;
+   height: 241px;   /* Height of the footer */
+}

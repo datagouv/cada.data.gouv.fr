@@ -1,0 +1,11 @@
+Flask==0.10.1
+Flask-Assets==0.9
+Flask-Mail==0.9.0
+Flask-Script==0.6.7
+Flask-WTF==0.9.4
+Jinja2==2.7.2
+elasticsearch==1.0.0
+flask-mongoengine==0.7.0
+mongoengine==0.8.7
+unicodecsv==0.9.4
+cssmin==0.2.0

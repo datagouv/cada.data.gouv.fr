@@ -1,0 +1,6 @@
+include LICENSE MANIFEST.in README.rst manage.py
+
+recursive-include cada *
+recursive-include requirements *
+
+global-exclude *~ *.egg *.pyc .DS_Store

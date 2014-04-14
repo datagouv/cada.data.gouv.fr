@@ -1,0 +1,125 @@
+{% macro facet_filter(facets, name, label, icon=None, formatter=None) %}
+{% set terms = facets.get(name, []) %}
+{% if terms|length > 1 %}
+<div class="panel-heading clickable" data-toggle="collapse" data-target="#collapse-{{name}}">
+    <h3 class="panel-title">
+        <span class="glyphicon glyphicon-{{ icon or 'filter' }}"></span>
+        {{ label }}
+    </h3>
+</div>
+<div id="collapse-{{name}}" class="list-group collapse in">
+    {% for term, count, active in terms %}
+        {% if not active %}
+        <a href="{{ url_rewrite(page=1)|url_add(**{name: term}) }}"
+            class="list-group-item" title="{{ formatter(term) if formatter else term }}">
+            <span class="badge pull-right">{{ count }}</span>
+            {{ formatter(term) if formatter else term }}
+        </a>
+        {% endif %}
+    {% else %}
+        <a class="list-group-item disabled">{{ _('No value to filter') }}</a>
+    {% endfor %}
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro tree_facet_filter(facets, name, label, icon=None, sep='/') %}
+{% set terms = facets.get(name, [])|treeize_facet(sep) %}
+{% if terms|length > 1 %}
+<div class="panel-heading clickable" data-toggle="collapse" data-target="#collapse-{{name}}">
+    <h3 class="panel-title">
+        <span class="glyphicon glyphicon-{{ icon or 'filter' }}"></span>
+        {{ label }}
+    </h3>
+</div>
+<div id="collapse-{{name}}" class="list-group collapse in">
+    {% for term, count, active, subterms in terms %}
+        {% if not active or subterms %}
+        <a href="{{ url_rewrite(page=1)|url_add(**{name: term}) }}"
+            class="list-group-item" title="{{ formatter(term) if formatter else term }}">
+            <span class="glyphicon glyphicon-folder-{{'open' if subterms else 'close'}}"></span>
+            <span class="badge pull-right">{{ count }}</span>
+            {{ formatter(term) if formatter else term }}
+        </a>
+            {% for subterm, count, active in subterms %}
+            {% if not active %}
+            <a href="{{ url_rewrite(page=1)|url_add(**{name: term+'/'+subterm}) }}"
+                class="list-group-item nested"
+                title="{{ formatter(subterm) if formatter else subterm }}">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+                <span class="badge pull-right">{{ count }}</span>
+                {{ formatter(subterm) if formatter else subterm }}
+            </a>
+            {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro sorter_entries(field, label, type=None) %}
+{% set type = type or 'attributes' %}
+{% set orders = ['asc', 'desc'] if type == 'alphabet' else ['desc', 'asc'] %}
+{% for order in orders %}
+{% set suffix = '-alt' if order == 'desc' else '' %}
+<li>
+    <a href="{{ url_rewrite(sort=field+' '+order)|url_del('page') }}">
+        <span class="glyphicon glyphicon-sort-by-{{type}}{{suffix}}"></span>
+        {{ label }}
+    </a>
+</li>
+{% endfor %}
+{% endmacro %}
+
+{% macro filter_label(name, label, icon=None, formatter=None) %}
+{% set values = request.args.getlist(name) or [] %}
+{% for value in values  %}
+<span class="tag label label-info" title="{{ label }}">
+    {% if icon %}
+    <span class="glyphicon glyphicon-{{ icon }}"></span>
+    {% endif %}
+    <span>{{ formatter(value) if formatter else value }}</span>
+    <a href="{{ ''|url_del('page', **{name: value}) }}">
+        <span class="close-icon glyphicon glyphicon-remove"></span>
+    </a>
+</span>
+{% endfor %}
+{% endmacro %}
+
+{% macro paginator(page, page_size, total, nb=3) %}
+{% set pages = ((total|float) / page_size)|round(0, 'ceil')|int %}
+{% if pages > 1 %}
+{% set start = 1 if page <= nb else page - nb %}
+{% set end = pages if page + nb > pages else page + nb %}
+<div class="text-center">
+    <ul class="pagination">
+        <li {% if page == 1 %}class="disabled"{% endif %}>
+            <a href="{{ url_rewrite(page=1) }}" title="Première page">
+                &laquo;
+            </a>
+        </li>
+        <li {% if page == 1 %}class="disabled"{% endif %}>
+            <a href="{{ url_rewrite(page=page - 1) }}" title="Page précédante">
+                &lsaquo;
+            </a>
+        </li>
+        {% for num_page in range(start, end + 1) %}
+        <li {% if num_page == page %}class="active"{% endif %}>
+            <a href="{{ url_rewrite(page=num_page) }}">{{ num_page }}</a>
+        </li>
+        {% endfor %}
+        <li {% if page == pages %}class="disabled"{% endif %}>
+            <a href="{{ url_rewrite(page=page + 1) }}" title="Page suivante">
+                &rsaquo;
+            </a>
+        </li>
+        <li {% if page == pages %}class="disabled"{% endif %}>
+            <a href="{{ url_rewrite(page=pages) }}" title="Dernière page">
+                &raquo;
+            </a>
+        </li>
+    </ul>
+</div>
+{% endif %}
+{% endmacro %}

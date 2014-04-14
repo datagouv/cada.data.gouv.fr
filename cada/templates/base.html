@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Sans titre{% endblock %} - CADA</title>
+
+    {% assets "css" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}" />
+    {% endassets %}
+</head>
+<body>
+    <div class="main-wrapper">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">CADA<small>.data.gouv.fr</small></a>
+                </div>
+
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="{{ url_for('api_doc') }}">Documentation de l'API</a></li>
+                    </ul>
+                    {# Optionnal search bar #}
+                    {% set display_search = display_search|default(True) %}
+                    {% if display_search %}
+                    <form class="navbar-form navbar-right" role="search"
+                        action="{{ url_for('search') }}">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Recherche"
+                                name="q" value="{{ request.args.q }}">
+                        </div>
+                        <button type="submit" class="btn btn-default">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+
+        <div class="container">
+            {% for  category, message in get_flashed_messages(with_categories=true) %}
+            <div class="alert alert-{{category|default('info')}} alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                {{ message|safe }}
+            </div>
+            {% endfor %}
+
+            <div class="page">
+            {% block content %}{% endblock %}
+            </div>
+        </div>
+
+        {% include "footer.html" %}
+    </div>
+
+    {% assets "js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+    {% block extra_js %}{% endblock %}
+
+    {% include "piwik.html" %}
+</body>
+</html>

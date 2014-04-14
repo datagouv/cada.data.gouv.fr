@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% import 'macros.html' as m %}
+{% set display_search = False %}
+
+{% set sorters = {
+    'topic': ('Thème', 'alphabet'),
+    'administration': ('Administration', 'alphabet'),
+    'session': ('Séance', 'order'),
+} %}
+
+{% block title %}Recherche{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+
+        <div class="row">
+            <form class="col-lg-12" action="{{ url_for('search', **request.args) }}">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control"
+                        placeholder="Recherche" value="{{ request.args.q }}">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            {% if in_url('sort') %}
+                                {% set sort, order = request.args.sort.split(' ') %}
+                                {% set label, type = sorters[sort] %}
+                                {% set suffix = '-alt' if order == 'desc' else '' %}
+                                <span class="glyphicon glyphicon-sort-by-{{type}}{{suffix}}"></span>
+                                {{ label }}
+                            {% else %}
+                                <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                Pertinence
+                            {% endif %}
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu pull-right">
+                            <li>
+                                <a href="{{ url_rewrite(page=1)|url_del('sort') }}">
+                                    Pertinence
+                                </a>
+                            </li>
+                            {% for field, (label, type) in sorters.items() %}
+                                {{ m.sorter_entries(field, label, type) }}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 label-list">
+                {{ m.filter_label('administration', 'Administration', 'home') }}
+                {{ m.filter_label('session', 'Séance', 'calendar', es_date) }}
+                {{ m.filter_label('tag', 'Mot-clé', 'tag') }}
+                {{ m.filter_label('topic', 'Thème', 'book') }}
+                {{ m.filter_label('part', 'Mode de consultation', 'bullhorn', part_label) }}
+                {{ m.filter_label('meaning', 'Conclusion', 'comment') }}
+            </div>
+        </div>
+
+        <hr/>
+
+        <ul class="list-unstyled search-result">
+            {% for advice in advices %}
+            <li>
+                <a class="title" href="{{ url_for('display', id=advice.id) }}">
+                    {{ advice.type.title() }} {{ advice.id }}
+                </a>
+                <div class="subtitle">
+                    <span class="glyphicon glyphicon-home"></span>
+                    {{ advice.administration }}
+                </div>
+                <div class="excerpt">{{ advice.subject|truncate(100) }}</div>
+                <div class="label-list">
+                    <a class="label label-info" title="Séance"
+                        href="{{url_for('search', session=advice.session.strftime('%Y-%m-%d')) }}">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                        {{ advice.session.strftime('%d/%m/%Y') }}
+                    </a>
+                    {% for topic in advice.topics %}
+                    <a class="label label-primary" title="Thème"
+                        href="{{url_for('search', topic=topic) }}">
+                        <span class="glyphicon glyphicon-book"></span>
+                        {{ topic }}
+                    </a>
+                    {% endfor %}
+                    {# {% for meaning in advice.meanings %}
+                    <a class="label label-primary" title="Conclusion"
+                        href="{{url_for('search', meaning=meaning) }}">
+                        <span class="glyphicon glyphicon-comment"></span>
+                        {{ meaning }}
+                    </a>
+                    {% endfor %} #}
+                    {% for tag in advice.tags %}
+                    <a class="label label-default" title="Tag"
+                        href="{{url_for('search', tag=tag) }}">
+                        <span class="glyphicon glyphicon-tag"></span>
+                        {{ tag }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </li>
+            {% else %}
+            <li>Aucun résultat</li>
+            {% endfor %}
+        </ul>
+
+        {{ m.paginator(page, page_size, total) }}
+
+    </div>
+    <aside class="col-md-4">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                {% if total %}
+                    Résultats {{ ((page - 1) * page_size) + 1 }}
+                    à {{ page * page_size if page * page_size <= total else total }}
+                    sur {{ total }} trouvés.
+                {% else %}
+                    Aucun résultat trouvé
+                {% endif %}
+            </div>
+            {{ m.facet_filter(facets, 'administration', 'Administrations', 'home') }}
+            {{ m.facet_filter(facets, 'session', 'Séances', 'calendar', es_date) }}
+            {{ m.facet_filter(facets, 'tag', 'Mots-clés', 'tags') }}
+            {{ m.tree_facet_filter(facets, 'topic', 'Thèmes', 'book') }}
+            {{ m.facet_filter(facets, 'meaning', 'Conclusions', 'comment') }}
+            {{ m.facet_filter(facets, 'part', 'Modes de consultation', 'bullhorn', part_label) }}
+        </div>
+
+    </aside>
+</div>
+
+{% endblock %}

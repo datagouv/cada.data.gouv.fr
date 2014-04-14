@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}API{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>API <small>Documentation</small></h1>
+</div>
+
+<p>L'API de cada.data.gouv.fr ne contient que deux points d'entrée:</p>
+<ul>
+    <li><code>/api/&lt;id&gt;/</code>: pour l'accès direct à un avis depuis son identifiant</li>
+    <li><code>/api/search/</code>: pour la recherche paginée</li>
+</ul>
+<p>Le fonctionnement est strictement similaire à celui des pages web.</p>
+
+<h2>Accès direct</h2>
+<p>Cette API permet l'accès direct à un avis CADA par son identifiant</p>
+
+<h3>Exemple</h3>
+<p>Voici un exemple d'accès direct à l'avis CADA n°20134525</p>
+<p><code>GET {{ url_for('api_display', id='20134525') }}</code></p>
+<p><pre data-api="{{ url_for('api_display', id='20134525') }}"></pre></p>
+
+<h2>Recherche</h2>
+<p>La recherche accepte les paramètres d'URL suivants:</p>
+<ul>
+    <li><code>q</code>: recherche textuelle</li>
+    <li>
+        <code>sort</code>: critère de tri. Le tri s'effectue sur le score de recherche si ce paramètre n'est pas spécifié. Les valeurs possibles sont:
+        <ul>
+            <li><code>administration (asc|desc)</code>: tri par administrations</li>
+            <li><code>topic (asc|desc)</code>: tri par thémes</li>
+            <li><code>session (asc|desc)</code>: tri par date de séance</li>
+        </ul>
+    </li>
+    <li><code>administration</code>: filtre sur l'administration spécifiée</li>
+    <li><code>tag</code>: filtre sur la tag spécifié (peut-être spécifié plusieurs fois)</li>
+    <li><code>topic</code>: filtre sur le thème spécifié</li>
+    <li><code>session</code>: filtre sur la session spécifiée (au format <code>yyyy-mm-dd</code></li>
+    <li><code>part</code>: filtre sur le partie pris (au choix, 1, 2 ou 3)</li>
+    <li><code>meaning</code>: filtre sur les réponses données</li>
+    <li><code>page</code>: affiche la page indiquée (en relation avec <code>page_size</code></li>
+    <li><code>page_size</code>: spécifie la taille de la pagination (20 par défaut)</li>
+</ul>
+
+<p>La réponse est un objet JSON à 5 attributs:</p>
+<ul>
+    <li><code>advices</code>: une liste triée des avis correspondants aux critères de recherche</li>
+    <li><code>page</code>: le numéro de la page courante</li>
+    <li><code>page_size</code>: la taille de la pagination</li>
+    <li><code>total</code>: le nombre total d'avis retournés par la recherche</li>
+    <li>
+        <code>facets</code>: Les différents facettes associées à la recherche sous la forme de liste de triplets:
+        <ol>
+            <li>la valeur du champ associé à la facette</li>
+            <li>le nombre d'occurence dans les résultats de la recherche</li>
+            <li><code>true</code> si un filtre est appliqué sur cette valeur</li>
+        </ol>
+    </li>
+</ul>
+
+<h3>Exemple</h3>
+<p>Voici un exemple de recherche sur le terme "Paris", triée par dates de séance décroissantes et n'affichant que les 3 premiers éléments</p>
+<p><code>GET {{ url_for('api_search', q='Paris', sort='session desc', page_size=3) }}</code></p>
+<p><pre data-api="{{ url_for('api_search', q='Paris', sort='session desc', page_size=3) }}"></pre></p>
+{% endblock %}
+
+
+{% block extra_js %}
+{% assets "js-api" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+{% endblock %}

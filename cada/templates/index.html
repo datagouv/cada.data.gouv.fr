@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% set display_search = False %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+<div class="container-full">
+    <div class="row">
+        <div class="col-sm-12 text-center v-center">
+            <form class="col-sm-12 megasearch" action="{{ url_for('search') }}">
+                <div class="input-group">
+                    <input name="q" class="form-control input-lg"
+                        placeholder="Retrouvez un avis CADA parmi les {{total}} disponibles" type="text">
+                    <div class="input-group-btn">
+                        <button class="btn btn-lg btn-primary" type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <h3>Mots-clés</h3>
+            <ul class="tags blue">
+                {% for tag, count in tag_cloud %}
+                    <li>
+                        <a href="{{ url_for('search', tag=tag) }}">
+                            {{ tag }}
+                            <span>{{ count }}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-sm-6">
+            <h3>Thèmes</h3>
+            <ul class="tags topics">
+                {% for topic, count in topics %}
+                    <li>
+                        <a href="{{ url_for('search', topic=topic) }}">
+                            {{ topic }}
+                            <span>{{ count }}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
