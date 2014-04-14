@@ -11,7 +11,7 @@ Cada
 
 A simplistic interface to search and consult CADA advices.
 
-This is the engine behing http://cada.data.gouv.fr.
+This is the engine behind http://cada.data.gouv.fr.
 
 Compatibility
 =============
@@ -51,19 +51,19 @@ You need to create the cada working directory, designed by ``$HOME`` in this doc
     $ vim cada.cfg  # See configuration
     $ wget http://cada.data.gouv.fr/export -O data.csv
     $ cada load data.csv  # Load initial data
-    $ cada static  # Optionnal: collect static assets for proper caching
+    $ cada static  # Optional: collect static assets for proper caching
     $ cada runserver
 
 
 Configuration
 =============
-All configuration is done trhough the ``cada.cfg`` file in ``$HOME``.
+All configuration is done through the ``cada.cfg`` file in ``$HOME``.
 It's basically a Python file with constants defined in it:
 
 * ``SERVER_NAME``: the public server name. Mainly used in emails.
 * ``SECRET_KEY``: the common crypto hash.Used for session by exemple.
 * ``ELASTICSEARCH_URL``: the ElasticSearch server URL in ``host:port`` format. Default to ``localhost:9200`` if not set
-* ``MONGODB_SETTINGS``: a dictionnary to configure MongoDB. Default to ``{'DB': 'cada'}``. See `the official flask-mongoengine documentation <https://flask-mongoengine.readthedocs.org/en/latest/>`_ for more details.
+* ``MONGODB_SETTINGS``: a dictionary to configure MongoDB. Default to ``{'DB': 'cada'}``. See `the official flask-mongoengine documentation <https://flask-mongoengine.readthedocs.org/en/latest/>`_ for more details.
 
 Mails
 -----
@@ -74,17 +74,17 @@ Mail server configuration is done through the following variables:
 * ``MAIL_PORT``: SMTP server port. Default to ``25``.
 * ``MAIL_USE_TLS``: activate TLS. Default to ``False``.
 * ``MAIL_USE_SSL``: activate SSL. Default to ``False``.
-* ``MAIL_USERNAME``: optionnal SMTP server username.
-* ``MAIL_PASSWORD``: optionnal SMTP server password.
+* ``MAIL_USERNAME``: optional SMTP server username.
+* ``MAIL_PASSWORD``: optional SMTP server password.
 * ``MAIL_DEFAULT_SENDER``: Sender email used for mailings. Default to ``cada@localhost``.
-* ``ANON_ALERT_MAIL``: destination mail for anonimysation alerts. Default to ``cada.alert@localhost``.
+* ``ANON_ALERT_MAIL``: destination mail for anonymisation alerts. Default to ``cada.alert@localhost``.
 
 See the `official Flask-Mail documentation <http://pythonhosted.org/flask-mail/#configuring-flask-mail>`_ for more details.
 
 Sentry
 ------
 
-There is an optionnal support for Sentry.
+There is an optional support for Sentry.
 You need to install the required dependencies:
 
 .. code-block:: console
@@ -103,7 +103,7 @@ You need to add your Sentry DSN to the configuration
 Piwik
 -----
 
-There is an optionnal Piwik support.
+There is an optional Piwik support.
 You simply need to add your Piwik server URL and your Piwik project ID to the configuration:
 
 .. code-block:: python
