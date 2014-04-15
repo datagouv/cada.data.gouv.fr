@@ -8,13 +8,12 @@ from glob import iglob
 from os.path import exists
 from sys import exit
 
-from flask import url_for
 from flask.ext.script import Manager, Server, prompt_bool
 from webassets.script import CommandLineEnvironment
 
 from cada import app, assets, csv
 from cada.models import Advice
-from cada.search import es, DOCTYPE
+from cada.search import es, index
 
 manager = Manager(app)
 
@@ -27,7 +26,9 @@ manager.add_command("runserver", Server(
 
 
 @manager.option('patterns', nargs='+', help='file patterns to load')
-def load(patterns):
+@manager.option('-r', '--reindex', dest="full_reindex", action='store_true',
+    help="Trigger a full reindexation")
+def load(patterns, full_reindex):
     '''Load a CADA CSV file'''
     for pattern in patterns:
         for filename in iglob(pattern):
@@ -40,7 +41,8 @@ def load(patterns):
                     csv.from_row(row)
                     print('.' if idx % 50 else idx, end='')
                 print('\nProcessed {0} rows'.format(idx))
-    reindex()
+    if full_reindex:
+        reindex()
 
 
 @manager.command
@@ -52,24 +54,7 @@ def reindex():
     es.initialize()
 
     for idx, advice in enumerate(Advice.objects, 1):
-        topics = []
-        for topic in advice.topics:
-            topics.append(topic)
-            parts = topic.split('/')
-            if len(parts) > 1:
-                topics.append(parts[0])
-        es.index(index=es.index_name, doc_type=DOCTYPE, id=advice.id, body={
-            'id': advice.id,
-            'administration': advice.administration,
-            'type': advice.type,
-            'session': advice.session.strftime('%Y-%m-%d'),
-            'subject': advice.subject,
-            'topics': topics,
-            'tags': advice.tags,
-            'meanings': advice.meanings,
-            'part': advice.part,
-            'content': advice.content,
-        })
+        index(advice)
         print('.' if idx % 50 else idx, end='')
 
     es.indices.refresh(index=es.index_name)
@@ -150,6 +135,7 @@ def fix(filename):
                 advice.subject = advice.subject.replace(source, dest)
                 advice.content = advice.content.replace(source, dest)
             advice.save()
+            index(advice)
         print('')
     for id in bads:
         print('{0}: Replacements length not matching'.format(id))
