@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from datetime import datetime
 
 from elasticsearch import Elasticsearch
 from flask import current_app, request
@@ -224,6 +225,9 @@ def search_advices():
 def facet_to_list(result, facet):
     return [(t['term'], t['count']) for t in result['facets'][facet]['terms']]
 
+def ts_to_dt(value):
+    '''Convert an elasticsearch timestamp into a Python datetime'''
+    return datetime.utcfromtimestamp(value * 1E-3)
 
 def home_data():
     result = es.search(es.index_name, body={
@@ -240,13 +244,22 @@ def home_data():
                     'size': 20,
                 }
             },
-        }
+            "sessions" : {
+                "statistical" : {
+                    "field" : "session"
+                }
+            }
+        },
     })
 
     return {
         'topics': facet_to_list(result, 'topics'),
         'tag_cloud': facet_to_list(result, 'tags'),
         'total': result['hits']['total'],
+        'sessions': {
+            'from': ts_to_dt(result['facets']['sessions']['min']),
+            'to': ts_to_dt(result['facets']['sessions']['max']),
+        },
     }
 
 

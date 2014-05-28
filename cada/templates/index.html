@@ -10,7 +10,7 @@
             <form class="col-sm-12 megasearch" action="{{ url_for('search') }}">
                 <div class="input-group">
                     <input name="q" class="form-control input-lg"
-                        placeholder="Retrouvez un avis CADA parmi les {{total}} disponibles" type="text">
+                        placeholder="Retrouvez un avis CADA parmi les {{total}} disponibles ({{sessions.from.strftime('%d/%m/%Y')}} au {{sessions.to.strftime('%d/%m/%Y')}})" type="text">
                     <div class="input-group-btn">
                         <button class="btn btn-lg btn-primary" type="submit">
                             <span class="glyphicon glyphicon-search"></span>
