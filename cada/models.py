@@ -4,9 +4,9 @@ from __future__ import unicode_literals
 from cada import db
 
 PARTS = {
-    1: {'label': 'Présentiel', 'help': "L'administration s'est déplacée à la séance"},
-    2: {'label': 'Etudié', 'help': "Etude et avis sur de nouveaux cas"},
-    3: {'label': 'Récurrent', 'help': "Avis sur des cas récurrents"},
+    1: {'label': "Avec audition de l'administration", 'help': "L'administration s'est déplacée à la séance"},
+    2: {'label': 'Affaire de principe', 'help': "Etude et avis sur de nouveaux cas"},
+    3: {'label': 'Affaire courante', 'help': "Avis sur des cas récurrents"},
 }
 
 

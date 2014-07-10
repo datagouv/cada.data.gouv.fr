@@ -225,9 +225,11 @@ def search_advices():
 def facet_to_list(result, facet):
     return [(t['term'], t['count']) for t in result['facets'][facet]['terms']]
 
+
 def ts_to_dt(value):
     '''Convert an elasticsearch timestamp into a Python datetime'''
     return datetime.utcfromtimestamp(value * 1E-3)
+
 
 def home_data():
     result = es.search(es.index_name, body={
