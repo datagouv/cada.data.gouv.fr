@@ -148,7 +148,7 @@ class AlertAnonForm(Form):
     details = TextField()
 
     def validate_details(form, field):
-        if RE_URL.match(field.data):
+        if RE_URL.search(field.data):
             raise ValidationError("Vous ne pouvez pas soumettre d'URL")
 
 
