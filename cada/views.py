@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import cStringIO as StringIO
+import re
 
 from datetime import datetime
 
@@ -12,13 +13,15 @@ from flask.ext.mail import Attachment
 from flask.ext.wtf import Form
 from jinja2 import Markup
 from werkzeug import url_decode, url_encode
-from wtforms import TextField
+from wtforms import TextField, ValidationError
 
 from cada import app, mail, csv
 from cada.models import Advice, PARTS
 from cada.search import search_advices, home_data
 
 DEFAULT_PAGE_SIZE = 20
+
+RE_URL = re.compile(r'https?://')
 
 
 @app.template_global(name='static')
@@ -143,6 +146,10 @@ def search():
 
 class AlertAnonForm(Form):
     details = TextField()
+
+    def validate_details(form, field):
+        if RE_URL.match(field.data):
+            raise ValidationError("Vous ne pouvez pas soumettre d'URL")
 
 
 @app.route('/<id>/')
