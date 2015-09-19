@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import logging
+
 from datetime import datetime
 
 from elasticsearch import Elasticsearch
@@ -9,6 +11,7 @@ from flask import current_app, request
 from cada import app
 from cada.models import Advice
 
+log = logging.getLogger(__name__)
 
 MAPPING = {
     'properties': {
@@ -274,15 +277,18 @@ def index(advice):
         if len(parts) > 1:
             topics.append(parts[0])
 
-    es.index(index=es.index_name, doc_type=DOCTYPE, id=advice.id, body={
-        'id': advice.id,
-        'administration': advice.administration,
-        'type': advice.type,
-        'session': advice.session.strftime('%Y-%m-%d'),
-        'subject': advice.subject,
-        'topics': topics,
-        'tags': advice.tags,
-        'meanings': advice.meanings,
-        'part': advice.part,
-        'content': advice.content,
-    })
+    try:
+        es.index(index=es.index_name, doc_type=DOCTYPE, id=advice.id, body={
+            'id': advice.id,
+            'administration': advice.administration,
+            'type': advice.type,
+            'session': advice.session.strftime('%Y-%m-%d'),
+            'subject': advice.subject,
+            'topics': topics,
+            'tags': advice.tags,
+            'meanings': advice.meanings,
+            'part': advice.part,
+            'content': advice.content,
+        })
+    except:
+        log.exception('Unable to index advice %s', advice.id)
