@@ -44,7 +44,7 @@ MAPPING = {
                 'raw': {'type': 'string', 'index': 'not_analyzed'}
             }
         },
-        'tags': {'type': 'string', 'index_name': 'tag', 'index': 'not_analyzed'},
+        'tags': {'type': 'string', 'index': 'not_analyzed'},
         'meanings': {'type': 'string', 'index': 'not_analyzed'},
         'part': {'type': 'short'},
         'content': {
