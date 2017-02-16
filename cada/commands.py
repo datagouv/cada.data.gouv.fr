@@ -53,6 +53,7 @@ def reindex():
         es.indices.delete(index=es.index_name)
     es.initialize()
 
+    idx = 0
     for idx, advice in enumerate(Advice.objects, 1):
         index(advice)
         print('.' if idx % 50 else idx, end='')
