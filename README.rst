@@ -2,12 +2,9 @@
 Cada
 ====
 
-.. image:: https://pypip.in/version/cada/badge.png
-    :target: https://pypi.python.org/pypi/cada/
-    :alt: Latest Version
-.. image:: https://pypip.in/download/cada/badge.png
-    :target: https://pypi.python.org/pypi/cada/
-    :alt: Downloads
+.. image:: https://circleci.com/gh/etalab/cada/tree/master.svg?style=svg
+    :target: https://circleci.com/gh/etalab/cada/tree/master
+    :alt: Build status
 
 A simplistic interface to search and consult CADA advices.
 

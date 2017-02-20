@@ -68,6 +68,8 @@ setup(
     install_requires=install_requires,
     extras_require={
         'sentry': pip('sentry.pip'),
+        'test': pip('test.pip'),
+        'report': pip('report.pip'),
     },
     entry_points={
         'console_scripts': [
