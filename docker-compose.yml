@@ -1,0 +1,27 @@
+version: '2'
+
+services:
+  db:
+    image: mongo:3.2
+    command: mongod
+    volumes:
+      - data-db:/data/db
+    ports:
+      - "27017:27017"
+
+  search:
+    image: udata/elasticsearch:2.4.4
+    volumes:
+      - data-search:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+
+  mail:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+volumes:
+  data-db:
+  data-search:
