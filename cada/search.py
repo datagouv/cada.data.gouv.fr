@@ -174,7 +174,7 @@ def build_query():
     return {'bool': {'must': must}} if must else {'match_all': {}}
 
 
-def build_facets():
+def build_aggs():
     return dict([
         (name, {'terms': {'field': field, 'size': 10}})
         for name, field in FACETS.items()
@@ -196,7 +196,7 @@ def search_advices():
 
     result = es.search(index=es.index_name, doc_type=DOCTYPE, body={
         'query': build_query(),
-        'facets': build_facets(),
+        'aggs': build_aggs(),
         'from': start,
         'size': page_size,
         'sort': build_sort(),
@@ -208,12 +208,12 @@ def search_advices():
     advices = [advices[id] for id in ids]
 
     facets = {}
-    for name, content in result.get('facets', {}).items():
+    for name, content in result.get('aggregations', {}).items():
         actives = request.args.get(name)
         actives = [actives] if isinstance(actives, basestring) else actives or []
         facets[name] = [
-            (term['term'], term['count'], term['term'] in actives)
-            for term in content.get('terms', [])
+            (term['key'], term['doc_count'], term['key'] in actives)
+            for term in content.get('buckets', [])
         ]
 
     return {
@@ -225,8 +225,8 @@ def search_advices():
     }
 
 
-def facet_to_list(result, facet):
-    return [(t['term'], t['count']) for t in result['facets'][facet]['terms']]
+def agg_to_list(result, facet):
+    return [(t['key'], t['doc_count']) for t in result['aggregations'][facet]['buckets']]
 
 
 def ts_to_dt(value):
@@ -238,19 +238,19 @@ def home_data():
     result = es.search(es.index_name, body={
         'query': {'match_all': {}},
         'size': 0,
-        'facets': {
+        'aggs': {
             'tags': {
                 'terms': {'field': 'tags', 'size': 20}
             },
             'topics': {
                 'terms': {
                     'field': 'topics.raw',
-                    "regex": "[^/]*",  # Exclude subtopics
+                    "exclude": "/*",  # Exclude subtopics
                     'size': 20,
                 }
             },
             "sessions" : {
-                "statistical" : {
+                "stats" : {
                     "field" : "session"
                 }
             }
@@ -258,12 +258,12 @@ def home_data():
     })
 
     return {
-        'topics': facet_to_list(result, 'topics'),
-        'tag_cloud': facet_to_list(result, 'tags'),
+        'topics': agg_to_list(result, 'topics'),
+        'tag_cloud': agg_to_list(result, 'tags'),
         'total': result['hits']['total'],
         'sessions': {
-            'from': ts_to_dt(result['facets']['sessions']['min']),
-            'to': ts_to_dt(result['facets']['sessions']['max']),
+            'from': ts_to_dt(result['aggregations']['sessions']['min']),
+            'to': ts_to_dt(result['aggregations']['sessions']['max']),
         },
     }
 

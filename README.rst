@@ -16,15 +16,15 @@ This is the engine behind http://cada.data.gouv.fr.
 Compatibility
 =============
 
-CADA has been tested on Python 2.7, MongoDB 2.4+ and ElasticSearch 1.1.
+CADA has been tested on Python 2.7, MongoDB 2.4+ and ElasticSearch 2.4.
 
-The `ElasticSearch ICU Analysis plugin <http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/analysis-icu-plugin.html>`_ is required.
+The `ElasticSearch ICU Analysis plugin <https://www.elastic.co/guide/en/elasticsearch/plugins/2.4/analysis-icu.html>`_ is required.
 
 You can install it with:
 
 .. code-block:: console
 
-    bin/plugin -install elasticsearch/elasticsearch-analysis-icu/2.1.0
+    bin/plugin -install analysis-icu
 
 
 Installation
@@ -35,12 +35,6 @@ You can install Cada with pip:
 .. code-block:: console
 
     $ pip install cada
-
-or with easy_install:
-
-.. code-block:: console
-
-    $ easy_install cada
 
 
 You need to create the cada working directory, designed by ``$HOME`` in this documentation:
@@ -110,4 +104,3 @@ You simply need to add your Piwik server URL and your Piwik project ID to the co
 
     PIWIK_URL = 'piwik.mydomain.com'
     PIWIK_ID = X
-
