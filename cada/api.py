@@ -13,7 +13,8 @@ api = Blueprint('api', __name__)
 
 @api.route('/')
 def doc():
-    return render_template('api.html')
+    sample = Advice.objects.first()
+    return render_template('api.html', sample=sample)
 
 
 @api.route('/search')

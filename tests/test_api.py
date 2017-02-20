@@ -3,7 +3,12 @@ from flask import url_for
 from cada import search
 
 
-def test_api_doc(client):
+def test_api_doc_empty(client):
+    assert client.get(url_for('api.doc')).status_code == 200
+
+
+def test_api_doc_wih_advices(client, advice_factory):
+    advice_factory.create_batch(3)
     assert client.get(url_for('api.doc')).status_code == 200
 
 

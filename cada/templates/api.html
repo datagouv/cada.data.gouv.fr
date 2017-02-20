@@ -18,9 +18,9 @@
 <p>Cette API permet l'accès direct à un avis CADA par son identifiant</p>
 
 <h3>Exemple</h3>
-<p>Voici un exemple d'accès direct à l'avis CADA n°20134525</p>
-<p><code>GET {{ url_for('api.display', id='20134525') }}</code></p>
-<p><pre data-api="{{ url_for('api.display', id='20134525') }}"></pre></p>
+<p>Voici un exemple d'accès direct à l'avis CADA n°{{ sample.id }}</p>
+<p><code>GET {{ url_for('api.display', id=sample.id) }}</code></p>
+<p><pre data-api="{{ url_for('api.display', id=sample.id) }}"></pre></p>
 
 <h2>Recherche</h2>
 <p>La recherche accepte les paramètres d'URL suivants:</p>
