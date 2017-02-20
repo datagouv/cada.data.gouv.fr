@@ -9,8 +9,8 @@ from datetime import datetime
 from urlparse import urlsplit, urlunsplit
 
 from flask import abort, render_template, url_for, request, jsonify, Response, flash, redirect
-from flask.ext.mail import Attachment
-from flask.ext.wtf import Form
+from flask_mail import Attachment
+from flask_wtf import Form
 from jinja2 import Markup
 from werkzeug import url_decode, url_encode
 from wtforms import TextField, ValidationError

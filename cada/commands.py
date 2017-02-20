@@ -8,7 +8,7 @@ from glob import iglob
 from os.path import exists
 from sys import exit
 
-from flask.ext.script import Manager, Server, prompt_bool
+from flask_script import Manager, Server, prompt_bool
 from webassets.script import CommandLineEnvironment
 
 from cada import app, assets, csv

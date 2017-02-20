@@ -7,9 +7,9 @@ import os
 from os.path import exists, join
 
 from flask import Flask
-from flask.ext.mongoengine import MongoEngine
-from flask.ext.assets import Environment, Bundle
-from flask.ext.mail import Mail
+from flask_mongoengine import MongoEngine
+from flask_assets import Environment, Bundle
+from flask_mail import Mail
 
 
 class DefaultConfig(object):
