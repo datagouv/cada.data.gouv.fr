@@ -21,7 +21,7 @@ You can install it with:
 
 .. code-block:: console
 
-    bin/plugin -install analysis-icu
+    bin/plugin install analysis-icu
 
 
 Installation
@@ -81,7 +81,7 @@ You need to install the required dependencies:
 .. code-block:: console
 
     $ pip install raven[flask]
-    # Or, to install it with cada
+    # Or to install it with cada
     $ pip install cada[sentry]
 
 You need to add your Sentry DSN to the configuration
