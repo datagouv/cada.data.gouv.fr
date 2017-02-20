@@ -1,4 +1,1 @@
-flake8==2.1.0
-mccabe==0.2.1
-pep8==1.4.6
-pyflakes==0.7.3
+flake8==3.3.0

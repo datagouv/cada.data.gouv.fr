@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from cada import db
+from flask_mongoengine import MongoEngine
+
+db = MongoEngine()
 
 PARTS = {
     1: {'label': "Avec audition de l'administration", 'help': "L'administration s'est déplacée à la séance"},

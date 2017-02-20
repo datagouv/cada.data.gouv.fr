@@ -7,10 +7,11 @@
 <div class="container-full">
     <div class="row">
         <div class="col-sm-12 text-center v-center">
-            <form class="col-sm-12 megasearch" action="{{ url_for('search') }}">
+            <form class="col-sm-12 megasearch" action="{{ url_for('site.search') }}">
                 <div class="input-group">
                     <input name="q" class="form-control input-lg"
-                        placeholder="Retrouvez un avis CADA parmi les {{total}} disponibles ({{sessions.from.strftime('%d/%m/%Y')}} au {{sessions.to.strftime('%d/%m/%Y')}})" type="text">
+                        placeholder="Retrouvez un avis CADA parmi les {{total}} disponibles {% if total %}({{sessions.from.strftime('%d/%m/%Y')}} au {{sessions.to.strftime('%d/%m/%Y')}}){% endif %}"
+                        type="text">
                     <div class="input-group-btn">
                         <button class="btn btn-lg btn-primary" type="submit">
                             <span class="glyphicon glyphicon-search"></span>
@@ -26,7 +27,7 @@
             <ul class="tags blue">
                 {% for tag, count in tag_cloud %}
                     <li>
-                        <a href="{{ url_for('search', tag=tag) }}">
+                        <a href="{{ url_for('site.search', tag=tag) }}">
                             {{ tag }}
                             <span>{{ count }}</span>
                         </a>
@@ -39,7 +40,7 @@
             <ul class="tags topics">
                 {% for topic, count in topics %}
                     <li>
-                        <a href="{{ url_for('search', topic=topic) }}">
+                        <a href="{{ url_for('site.search', topic=topic) }}">
                             {{ topic }}
                             <span>{{ count }}</span>
                         </a>

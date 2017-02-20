@@ -87,4 +87,4 @@ def to_row(advice):
 
 
 def to_anon_row(advice):
-    return (advice.id, url_for('display', id=advice.id, _external=True), '', '')
+    return (advice.id, url_for('front.display', id=advice.id, _external=True), '', '')

@@ -15,7 +15,7 @@
     <div class="col-md-8">
 
         <div class="row">
-            <form class="col-lg-12" action="{{ url_for('search', **request.args) }}">
+            <form class="col-lg-12" action="{{ url_for('site.search', **request.args) }}">
                 <div class="input-group">
                     <input type="text" name="q" class="form-control"
                         placeholder="Recherche" value="{{ request.args.q }}">
@@ -64,7 +64,7 @@
         <ul class="list-unstyled search-result">
             {% for advice in advices %}
             <li>
-                <a class="title" href="{{ url_for('display', id=advice.id) }}">
+                <a class="title" href="{{ url_for('site.display', id=advice.id) }}">
                     {{ advice.type.title() }} {{ advice.id }}
                 </a>
                 <div class="subtitle">
@@ -74,27 +74,27 @@
                 <div class="excerpt">{{ advice.subject|truncate(100) }}</div>
                 <div class="label-list">
                     <a class="label label-info" title="Séance"
-                        href="{{url_for('search', session=advice.session.strftime('%Y-%m-%d')) }}">
+                        href="{{url_for('site.search', session=advice.session.strftime('%Y-%m-%d')) }}">
                         <span class="glyphicon glyphicon-calendar"></span>
                         {{ advice.session.strftime('%d/%m/%Y') }}
                     </a>
                     {% for topic in advice.topics %}
                     <a class="label label-primary" title="Thème"
-                        href="{{url_for('search', topic=topic) }}">
+                        href="{{url_for('site.search', topic=topic) }}">
                         <span class="glyphicon glyphicon-book"></span>
                         {{ topic }}
                     </a>
                     {% endfor %}
                     {# {% for meaning in advice.meanings %}
                     <a class="label label-primary" title="Conclusion"
-                        href="{{url_for('search', meaning=meaning) }}">
+                        href="{{url_for('site.search', meaning=meaning) }}">
                         <span class="glyphicon glyphicon-comment"></span>
                         {{ meaning }}
                     </a>
                     {% endfor %} #}
                     {% for tag in advice.tags %}
                     <a class="label label-default" title="Tag"
-                        href="{{url_for('search', tag=tag) }}">
+                        href="{{url_for('site.search', tag=tag) }}">
                         <span class="glyphicon glyphicon-tag"></span>
                         {{ tag }}
                     </a>

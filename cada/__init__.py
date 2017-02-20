@@ -6,52 +6,48 @@ import os
 
 from os.path import exists, join
 
-from flask import Flask
-from flask_mongoengine import MongoEngine
-from flask_assets import Environment, Bundle
-from flask_mail import Mail
-
 
 class DefaultConfig(object):
-    MONGODB_SETTINGS = {'DB': 'cada'}
+    MONGODB_DB = 'cada'
     SECRET_KEY = 'no-secret-this-is-open'
     MAIL_DEFAULT_SENDER = 'cada@locahost'
     ANON_ALERT_MAIL = 'cada.alert@locahost'
 
 
-app = Flask(__name__)
+def create_app(config=None):
+    from flask import Flask
 
-app.config.from_object(DefaultConfig)
-app.config.from_envvar('CADA_CONFIG', silent=True)
+    from cada import views, api
+    from cada.assets import assets
+    from cada.models import db
+    from cada.search import es
 
-custom_settings = join(os.getcwd(), 'cada.cfg')
-if exists(custom_settings):
-    app.config.from_pyfile(custom_settings)
+    app = Flask('cada')
 
-db = MongoEngine(app)
-assets = Environment(app)
-mail = Mail(app)
+    app.config.from_object(DefaultConfig)
+    app.config.from_envvar('CADA_CONFIG', silent=True)
 
-js_bundle = Bundle('js/jquery.js', 'js/bootstrap.js', 'js/placeholders.jquery.js', 'js/cada.js',
-    filters='rjsmin', output='js/cada.min.js')
+    custom_settings = join(os.getcwd(), 'cada.cfg')
+    if exists(custom_settings):
+        app.config.from_pyfile(custom_settings)
 
-api_js_bundle = Bundle('js/api.js',
-    filters='rjsmin', output='js/api.min.js')
+    if config:
+        app.config.from_object(config)
 
-css_bundle = Bundle('css/bootstrap.flatly.css', 'css/cada.css',
-    filters='cssmin', output='css/cada.min.css')
+    # Optionnal Sentry support
+    if 'SENTRY_DSN' in app.config:
+        from raven.contrib.flask import Sentry
+        Sentry(app)
 
-assets.register('js', js_bundle)
-assets.register('js-api', api_js_bundle)
-assets.register('css', css_bundle)
+    db.init_app(app)
+    es.init_app(app)
+    assets.init_app(app)
+    views.init_app(app)
+    api.init_app(app)
 
-# Optionnal Sentry support
-if 'SENTRY_DSN' in app.config:
-    from raven.contrib.flask import Sentry
-    sentry = Sentry(app)
-
-from cada import models, search, views
+    return app
 
 
 if __name__ == '__main__':
+    app = create_app()
     app.run()

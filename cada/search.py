@@ -8,7 +8,6 @@ from datetime import datetime
 from elasticsearch import Elasticsearch
 from flask import current_app, request
 
-from cada import app
 from cada.models import Advice
 
 log = logging.getLogger(__name__)
@@ -118,7 +117,7 @@ class ElasticSearch(object):
         app.extensions['elasticsearch'] = Elasticsearch([app.config['ELASTICSEARCH_URL']])
 
     def __getattr__(self, item):
-        if not 'elasticsearch' in current_app.extensions.keys():
+        if 'elasticsearch' not in current_app.extensions.keys():
             raise Exception('not initialised, did you forget to call init_app?')
         return getattr(current_app.extensions['elasticsearch'], item)
 
@@ -139,7 +138,7 @@ class ElasticSearch(object):
             })
 
 
-es = ElasticSearch(app)
+es = ElasticSearch()
 
 
 def build_text_queries():
@@ -226,11 +225,17 @@ def search_advices():
 
 
 def agg_to_list(result, facet):
-    return [(t['key'], t['doc_count']) for t in result['aggregations'][facet]['buckets']]
+    return [
+        (t['key'], t['doc_count'])
+        for t in
+        result.get('aggregations', {}).get(facet, {}).get('buckets', [])
+    ]
 
 
 def ts_to_dt(value):
     '''Convert an elasticsearch timestamp into a Python datetime'''
+    if not value:
+        return
     return datetime.utcfromtimestamp(value * 1E-3)
 
 
@@ -249,21 +254,23 @@ def home_data():
                     'size': 20,
                 }
             },
-            "sessions" : {
-                "stats" : {
-                    "field" : "session"
+            "sessions": {
+                "stats": {
+                    "field": "session"
                 }
             }
         },
     })
+
+    sessions = result.get('aggregations', {}).get('sessions', {})
 
     return {
         'topics': agg_to_list(result, 'topics'),
         'tag_cloud': agg_to_list(result, 'tags'),
         'total': result['hits']['total'],
         'sessions': {
-            'from': ts_to_dt(result['aggregations']['sessions']['min']),
-            'to': ts_to_dt(result['aggregations']['sessions']['max']),
+            'from': ts_to_dt(sessions.get('min')),
+            'to': ts_to_dt(sessions.get('max')),
         },
     }
 

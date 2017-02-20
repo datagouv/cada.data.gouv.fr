@@ -23,7 +23,7 @@
                 Administration
             </div>
             <div class="panel-body">
-                <a href="{{ url_for('search', administration=advice.administration) }}">
+                <a href="{{ url_for('site.search', administration=advice.administration) }}">
                     {{ advice.administration }}
                 </a>
             </div>
@@ -33,7 +33,7 @@
                 Type de consultation
             </div>
             <div class="panel-body">
-                <a href="{{ url_for('search', part=advice.part) }}"
+                <a href="{{ url_for('site.search', part=advice.part) }}"
                     data-toggle="popover" title="{{advice.part|part_label}}"
                     data-content="{{advice.part|part_help}}" data-trigger="hover">
                     {{ advice.part|part_label }}
@@ -46,14 +46,14 @@
             </div>
             <div class="panel-body topics">
                 {% for topic, subtopics in advice.topics|treeize %}
-                    <a href="{{url_for('search', topic=topic) }}"
+                    <a href="{{url_for('site.search', topic=topic) }}"
                         class="label label-primary topic">
                         <span class="glyphicon glyphicon-folder-{{'open' if subtopics else 'close'}}"></span>
                         {{ topic }}
                     </a>
                     {% for subtopic in subtopics %}
                     <a class="label label-default subtopic"
-                        href="{{ url_for('search', topic=topic+'/'+subtopic) }}">
+                        href="{{ url_for('site.search', topic=topic+'/'+subtopic) }}">
                         <span class="glyphicon glyphicon-chevron-right"></span>
                         {{ subtopic }}
                     </a>
@@ -67,7 +67,7 @@
             </div>
             <div class="panel-body">
                 {% for meaning in advice.meanings %}
-                <a href="{{url_for('search', meaning=meaning) }}" class="label label-primary">{{ meaning }}</a>
+                <a href="{{url_for('site.search', meaning=meaning) }}" class="label label-primary">{{ meaning }}</a>
                 {% endfor %}
             </div>
 
@@ -77,7 +77,7 @@
             </div>
             <div class="panel-body">
                 {% for tag in advice.tags %}
-                <a href="{{url_for('search', tag=tag) }}" class="label label-primary">{{ tag }}</a>
+                <a href="{{url_for('site.search', tag=tag) }}" class="label label-primary">{{ tag }}</a>
                 {% endfor %}
             </div>
 
@@ -105,7 +105,7 @@
                     Aidez à détecter et corriger les défauts d'anonymisation en les signalant avec ce formulaire.
                 </p>
                 <form id="alert-form" method="POST"
-                    action="{{ url_for('alert', id=advice.id) }}">
+                    action="{{ url_for('site.alert', id=advice.id) }}">
                     {{ form.csrf_token }}
                     <textarea name="details" class="form-control" rows="3"
                         placeholder="Saisissez éventuellement quelques informations complémentaires sur l'erreur"></textarea>

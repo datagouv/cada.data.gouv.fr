@@ -11,11 +11,12 @@ from sys import exit
 from flask_script import Manager, Server, prompt_bool
 from webassets.script import CommandLineEnvironment
 
-from cada import app, assets, csv
+from cada import create_app, csv
+from cada.assets import assets
 from cada.models import Advice
 from cada.search import es, index
 
-manager = Manager(app)
+manager = Manager(create_app)
 
 # Turn on debugger by default and reloader
 manager.add_command("runserver", Server(
@@ -27,7 +28,7 @@ manager.add_command("runserver", Server(
 
 @manager.option('patterns', nargs='+', help='file patterns to load')
 @manager.option('-r', '--reindex', dest="full_reindex", action='store_true',
-    help="Trigger a full reindexation")
+                help="Trigger a full reindexation")
 def load(patterns, full_reindex):
     '''Load a CADA CSV file'''
     for pattern in patterns:
@@ -64,7 +65,7 @@ def reindex():
 
 @manager.option('path', nargs='?', default='static', help='target path')
 @manager.option('-ni', '--no-input', dest="input",
-    action='store_false', help="Disable input prompts")
+                action='store_false', help="Disable input prompts")
 def static(path, input):
     '''Compile and collect static files'''
     log = logging.getLogger('webassets')
