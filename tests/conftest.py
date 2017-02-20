@@ -4,7 +4,7 @@ import pytest
 from pytest_factoryboy import register
 
 from cada import create_app
-from cada.models import Advice, PARTS
+from cada.models import db, Advice, PARTS
 from cada.search import es
 
 
@@ -29,7 +29,11 @@ class TestConfig:
 
 @pytest.fixture
 def app():
-    return create_app(TestConfig)
+    app = create_app(TestConfig)
+    yield app
+    with app.test_request_context('/'):
+        db_name = app.config['MONGODB_DB']
+        db.connection.drop_database(db_name)
 
 
 @pytest.fixture()
