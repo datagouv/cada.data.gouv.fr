@@ -101,3 +101,8 @@ You simply need to add your Piwik server URL and your Piwik project ID to the co
 
     PIWIK_URL = 'piwik.mydomain.com'
     PIWIK_ID = X
+
+
+.. image:: https://badges.gitter.im/etalab/cada.svg
+   :alt: Join the chat at https://gitter.im/etalab/cada
+   :target: https://gitter.im/etalab/cada?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
