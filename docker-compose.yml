@@ -10,17 +10,11 @@ services:
       - "27017:27017"
 
   search:
-    image: udata/elasticsearch:2.4.4
+    image: udata/elasticsearch:2.4.5
     volumes:
       - data-search:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
-
-  mail:
-    image: mailhog/mailhog
-    ports:
-      - 1025:1025
-      - 8025:8025
 
 volumes:
   data-db:
