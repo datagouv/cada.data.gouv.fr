@@ -65,6 +65,7 @@ setup(
     author_email='axel@data.gouv.fr',
     packages=find_packages(),
     include_package_data=True,
+    zip_safe=False,
     install_requires=install_requires,
     extras_require={
         'sentry': pip('sentry.pip'),
@@ -73,7 +74,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'cada = cada.commands:main',
+            'cada = cada.commands:cli',
         ]
     },
     license='AGPLv3+',

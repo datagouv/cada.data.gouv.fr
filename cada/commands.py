@@ -1,55 +1,159 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, print_function
 
+import click
 import logging
+import pkg_resources
 import shutil
+import sys
 
 from glob import iglob
 from os.path import exists
-from sys import exit
 
-from flask_script import Manager, Server, prompt_bool
 from webassets.script import CommandLineEnvironment
+from flask.cli import FlaskGroup, shell_command, run_command, routes_command
 
 from cada import create_app, csv
 from cada.assets import assets
 from cada.models import Advice
 from cada.search import es, index
 
-manager = Manager(create_app)
+log = logging.getLogger(__name__)
 
-# Turn on debugger by default and reloader
-manager.add_command("runserver", Server(
-    use_debugger=True,
-    use_reloader=True,
-    host='0.0.0.0')
-)
+OK = '✔'.encode('utf8')
+KO = '✘'.encode('utf8')
+WARNING = '⚠'.encode('utf8')
+HEADER = '✯'.encode('utf8')
+
+NO_CAST = (int, float, bool)
+
+CONTEXT_SETTINGS = {
+    'auto_envvar_prefix': 'cada',
+    'help_option_names': ['-?', '-h', '--help'],
+}
+
+click.disable_unicode_literals_warning = True
 
 
-@manager.option('patterns', nargs='+', help='file patterns to load')
-@manager.option('-r', '--reindex', dest="full_reindex", action='store_true',
-                help="Trigger a full reindexation")
+def color(name, **kwargs):
+    return lambda t: click.style(str(t), fg=name, **kwargs).decode('utf8')
+
+
+green = color('green', bold=True)
+yellow = color('yellow', bold=True)
+red = color('red', bold=True)
+cyan = color('cyan', bold=True)
+magenta = color('magenta', bold=True)
+white = color('white', bold=True)
+echo = click.echo
+
+
+def header(msg, *args, **kwargs):
+    '''Display an header'''
+    msg = msg.format(*args, **kwargs)
+    echo(' '.join((yellow(HEADER), white(msg), yellow(HEADER))))
+
+
+def success(msg, *args, **kwargs):
+    '''Display a success message'''
+    msg = msg.format(*args, **kwargs)
+    echo('{0} {1}'.format(green(OK), white(msg)))
+
+
+def warning(msg, *args, **kwargs):
+    '''Display a warning message'''
+    msg = msg.format(*args, **kwargs)
+    echo('{0} {1}'.format(yellow(WARNING), msg))
+
+
+def error(msg, details=None):
+    '''Display an error message with optionnal details'''
+    msg = '{0} {1}'.format(red(KO), white(msg))
+    if details:
+        msg = '\n'.join((msg, str(details)))
+    echo(format_multiline(msg))
+
+
+def exit_with_error(msg='Aborted', details=None, code=-1):
+    '''Exit with error'''
+    error(msg, details)
+    sys.exit(code)
+
+
+def format_multiline(string):
+    string = string.replace('\n', '\n│ ')
+    return replace_last(string, '│', '└')
+
+
+def replace_last(string, char, replacement):
+    return replacement.join(string.rsplit(char, 1))
+
+
+LEVEL_COLORS = {
+    logging.DEBUG: cyan,
+    logging.WARNING: yellow,
+    logging.ERROR: red,
+    logging.CRITICAL: color('white', bg='red', bold=True),
+}
+
+LEVELS_PREFIX = {
+    logging.INFO: cyan(INFO),
+    logging.WARNING: yellow(WARNING),
+}
+
+
+def print_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo(pkg_resources.get_distribution('cada').version)
+    ctx.exit()
+
+
+@click.group(cls=FlaskGroup, create_app=create_app, context_settings=CONTEXT_SETTINGS,
+             add_version_option=False, add_default_commands=False)
+@click.option('--version', is_flag=True, callback=print_version, expose_value=False, is_eager=True)
+def cli():
+    '''CADA Management client'''
+
+
+cli._loaded_plugin_commands = True  # Prevent extensions to register their commands
+cli.add_command(shell_command)
+cli.add_command(run_command, name='runserver')
+cli.add_command(routes_command)
+
+
+@cli.command()
+@click.argument('patterns', nargs=-1)
+@click.option('-r', '--reindex', 'full_reindex', is_flag=True,
+              help='Trigger a full reindexation instead of indexing new advices')
 def load(patterns, full_reindex):
-    '''Load a CADA CSV file'''
+    '''
+    Load one or more CADA CSV files matching patterns
+    '''
+    header('Loading CSV files')
     for pattern in patterns:
         for filename in iglob(pattern):
-            print('Loading', filename)
+            echo('Loading {}'.format(white(filename)))
             with open(filename) as f:
                 reader = csv.reader(f)
                 # Skip header
                 reader.next()
                 for idx, row in enumerate(reader, 1):
-                    csv.from_row(row)
-                    print('.' if idx % 50 else idx, end='')
-                print('\nProcessed {0} rows'.format(idx))
+                    advice = csv.from_row(row)
+                    if not full_reindex:
+                        index(advice)
+                    echo('.' if idx % 50 else white(idx), nl=False)
+                echo(white(idx) if idx % 50 else '')
+                success('Processed {0} rows'.format(idx))
     if full_reindex:
         reindex()
 
 
-@manager.command
+@cli.command()
 def reindex():
     '''Reindex all advices'''
-    print('Deleting index {0}'.format(es.index_name))
+    header('Reindexing all advices')
+    echo('Deleting index {0}'.format(white(es.index_name)))
     if es.indices.exists(es.index_name):
         es.indices.delete(index=es.index_name)
     es.initialize()
@@ -57,17 +161,17 @@ def reindex():
     idx = 0
     for idx, advice in enumerate(Advice.objects, 1):
         index(advice)
-        print('.' if idx % 50 else idx, end='')
-
+        echo('.' if idx % 50 else white(idx), nl=False)
+    echo(white(idx) if idx % 50 else '')
     es.indices.refresh(index=es.index_name)
-    print('\nIndexed {0} advices'.format(idx))
+    success('Indexed {0} advices', idx)
 
 
-@manager.option('path', nargs='?', default='static', help='target path')
-@manager.option('-ni', '--no-input', dest="input",
-                action='store_false', help="Disable input prompts")
-def static(path, input):
-    '''Compile and collect static files'''
+@cli.command()
+@click.argument('path', default='static')
+@click.option('-ni', '--no-input', is_flag=True, help="Disable input prompts")
+def static(path, no_input):
+    '''Compile and collect static files into path'''
     log = logging.getLogger('webassets')
     log.addHandler(logging.StreamHandler())
     log.setLevel(logging.DEBUG)
@@ -76,20 +180,21 @@ def static(path, input):
     cmdenv.build()
 
     if exists(path):
-        print('"{0}" directory already exists and will be erased'.format(path))
-        if input and not prompt_bool('Are you sure'):
-            exit(-1)
+        warning('{0} directory already exists and will be {1}', white(path), white('erased'))
+        if not no_input and not click.confirm('Are you sure'):
+            exit_with_error()
         shutil.rmtree(path)
 
-    print('Copying assets into "{0}"'.format(path))
+    echo('Copying assets into {0}'.format(white(path)))
     shutil.copytree(assets.directory, path)
 
-    print('Done')
+    success('Done')
 
 
-@manager.command
+@cli.command()
 def anon():
     '''Check for candidates to anonymization'''
+    header(anon.__doc__)
     filename = 'urls_to_check.csv'
 
     candidates = Advice.objects(__raw__={
@@ -110,39 +215,35 @@ def anon():
         # Generate header
         writer.writerow(csv.ANON_HEADER)
 
-        for idx, advice in enumerate(candidates):
+        for idx, advice in enumerate(candidates, 1):
             writer.writerow(csv.to_anon_row(advice))
-            print('.' if idx % 50 else idx, end='')
-        print('')
+            echo('.' if idx % 50 else white(idx), nl=False)
+        echo(white(idx) if idx % 50 else '')
 
-    print('Total: {0} candidates'.format(len(candidates)))
+    success('Total: {0} candidates', len(candidates))
 
 
-@manager.command
-@manager.option('filename', nargs='?', default='fix.csv')
-def fix(filename):
+@cli.command()
+@click.argument('csvfile', default='fix.csv', type=click.File('r'))
+def fix(csvfile):
+    '''Apply a fix (ie. remove plain names)'''
+    header('Apply fixes from {}', csvfile.name)
     bads = []
-    with open(filename) as csvfile:
-        reader = csv.reader(csvfile)
-        reader.next()  # Skip header
-        for id, _, sources, dests in reader:
-            advice = Advice.objects.get(id=id)
-            sources = [s.strip() for s in sources.split(',') if s.strip()]
-            dests = [d.strip() for d in dests.split(',') if d.strip()]
-            if not len(sources) == len(dests):
-                bads.append(id)
-                continue
-            for source, dest in zip(sources, dests):
-                print('{0}: Replace {1} with {2}'.format(id, source, dest))
-                advice.subject = advice.subject.replace(source, dest)
-                advice.content = advice.content.replace(source, dest)
-            advice.save()
-            index(advice)
-        print('')
+    reader = csv.reader(csvfile)
+    reader.next()  # Skip header
+    for id, _, sources, dests in reader:
+        advice = Advice.objects.get(id=id)
+        sources = [s.strip() for s in sources.split(',') if s.strip()]
+        dests = [d.strip() for d in dests.split(',') if d.strip()]
+        if not len(sources) == len(dests):
+            bads.append(id)
+            continue
+        for source, dest in zip(sources, dests):
+            echo('{0}: Replace {1} with {2}', white(id), white(source), white(dest))
+            advice.subject = advice.subject.replace(source, dest)
+            advice.content = advice.content.replace(source, dest)
+        advice.save()
+        index(advice)
     for id in bads:
-        print('{0}: Replacements length not matching'.format(id))
-    print('\nDone')
-
-
-def main():
-    manager.run()
+        echo('{0}: Replacements length not matching', white(id))
+    success('Done')
