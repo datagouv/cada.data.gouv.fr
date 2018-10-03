@@ -22,6 +22,7 @@ log = logging.getLogger(__name__)
 
 OK = '✔'.encode('utf8')
 KO = '✘'.encode('utf8')
+INFO = '➢'.encode('utf8')
 WARNING = '⚠'.encode('utf8')
 HEADER = '✯'.encode('utf8')
 
@@ -139,11 +140,19 @@ def load(patterns, full_reindex):
                 # Skip header
                 reader.next()
                 for idx, row in enumerate(reader, 1):
-                    advice = csv.from_row(row)
-                    if not full_reindex:
-                        index(advice)
-                    echo('.' if idx % 50 else white(idx), nl=False)
-                echo(white(idx) if idx % 50 else '')
+                    try:
+                        advice = csv.from_row(row)
+                        skipped = False
+                        if not full_reindex:
+                            index(advice)
+                        echo('.' if idx % 50 else white(idx), nl=False)
+                    except Exception:
+                        echo(cyan('s') if idx % 50 else white('{0}(s)'.format(idx)), nl=False)
+                        skipped = True
+                if skipped:
+                    echo(white('{}(s)'.format(idx)) if idx % 50 else '')
+                else:
+                    echo(white(idx) if idx % 50 else '')
                 success('Processed {0} rows'.format(idx))
     if full_reindex:
         reindex()
