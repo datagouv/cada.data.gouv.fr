@@ -8,6 +8,7 @@ from os.path import exists, join
 
 
 class DefaultConfig(object):
+    MONGODB_HOST = 'localhost'
     MONGODB_DB = 'cada'
     SECRET_KEY = 'no-secret-this-is-open'
     MAIL_DEFAULT_SENDER = 'cada@locahost'

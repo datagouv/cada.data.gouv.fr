@@ -1,12 +1,11 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-# from cada import app
-from cada.commands import manager
+import os
 
-# class DebugConfig:
-#     ASSETS_DEBUG = True
+from cada.commands import cli
 
 if __name__ == "__main__":
-    # app.config['ASSETS_DEBUG'] = True
-    manager.run()
+    os.environ['FLASK_ENV'] = 'development'
+    cli()

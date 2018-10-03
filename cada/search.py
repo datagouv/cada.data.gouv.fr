@@ -297,5 +297,5 @@ def index(advice):
             'part': advice.part,
             'content': advice.content,
         })
-    except:
+    except Exception:
         log.exception('Unable to index advice %s', advice.id)

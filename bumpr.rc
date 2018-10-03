@@ -1,0 +1,25 @@
+[bumpr]
+file = setup.py
+regex = \s{4}version='(?P<version>.+?)',
+vcs = git
+commit = true
+tag = true
+tag_format = v{version}
+push = true
+tests = pytest
+publish = pytest setup.py bdist_wheel
+files =
+    README.md
+
+[bump]
+unsuffix = true
+
+[prepare]
+part = patch
+suffix = dev
+
+[changelog]
+file = CHANGELOG.md
+bump = ## {version} ({date:%Y-%m-%d})
+prepare = ## Current (in progress)
+separator =
