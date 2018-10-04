@@ -85,13 +85,13 @@
                         {{ topic }}
                     </a>
                     {% endfor %}
-                    {# {% for meaning in advice.meanings %}
-                    <a class="label label-primary" title="Conclusion"
+                    {% for meaning in advice.meanings %}
+                    <a class="label label-danger" title="Conclusion"
                         href="{{url_for('site.search', meaning=meaning) }}">
                         <span class="glyphicon glyphicon-comment"></span>
                         {{ meaning }}
                     </a>
-                    {% endfor %} #}
+                    {% endfor %}
                     {% for tag in advice.tags %}
                     <a class="label label-default" title="Tag"
                         href="{{url_for('site.search', tag=tag) }}">
