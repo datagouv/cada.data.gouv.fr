@@ -39,13 +39,28 @@ $ cada static  # Optional: collect static assets for proper caching
 $ cada runserver
 ```
 
+### local development environment
+
+Please make sure you are in a clean (virtualenv)[https://virtualenv.pypa.io/en/stable/].
+
+```bash
+$ git clone https://github.com/etalab/cada
+$ cd cada
+$ docker-compose up -d
+$ pip install -e .
+$ wget https://cada.data.gouv.fr/export -O data.csv
+$ cada load data.csv
+$ cada reindex
+$ cada runserver
+```
+
 
 ## Configuration
 All configuration is done through the ``cada.cfg`` file in ``$HOME``.
 It's basically a Python file with constants defined in it:
 
 * ``SERVER_NAME``: the public server name. Mainly used in emails.
-* ``SECRET_KEY``: the common crypto hash.Used for session by exemple.
+* ``SECRET_KEY``: the common crypto hash. e.g. sessions. `openssl rand -hex 24` should be a good start.
 * ``ELASTICSEARCH_URL``: the ElasticSearch server URL in ``host:port`` format. Default to ``localhost:9200`` if not set
 * ``MONGODB_SETTINGS``: a dictionary to configure MongoDB. Default to ``{'DB': 'cada'}``. See [the official flask-mongoengine documentation](https://flask-mongoengine.readthedocs.org/en/latest/) for more details.
 
