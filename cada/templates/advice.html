@@ -107,7 +107,7 @@
                 <form id="alert-form" method="POST"
                     action="{{ url_for('site.alert', id=advice.id) }}">
                     {{ form.csrf_token }}
-                    <textarea name="details" class="form-control" rows="3"
+                    <textarea name="details" class="form-control" rows="3" required=True
                         placeholder="Saisissez éventuellement quelques informations complémentaires sur l'erreur"></textarea>
                 </form>
             </div>

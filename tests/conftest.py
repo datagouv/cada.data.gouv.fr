@@ -25,6 +25,7 @@ class AdviceFactory(factory.mongoengine.MongoEngineFactory):
 class TestConfig:
     TESTING = True
     MONGODB_DB = 'cada-test'
+    WTF_CSRF_ENABLED = False
 
 
 @pytest.fixture

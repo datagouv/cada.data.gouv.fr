@@ -8,12 +8,13 @@ from datetime import datetime
 
 from urlparse import urlsplit, urlunsplit
 
-from flask import Blueprint, abort, render_template, url_for, request, flash, Response, redirect
+from flask import Blueprint, abort, render_template, url_for, request, flash, Response, redirect, current_app
 from flask_mail import Attachment, Mail
 from flask_wtf import FlaskForm
 from jinja2 import Markup
 from werkzeug import url_decode, url_encode
 from wtforms import TextField, ValidationError
+from wtforms.validators import InputRequired
 
 from cada import csv
 from cada.models import Advice, PARTS
@@ -149,7 +150,7 @@ def search():
 
 
 class AlertAnonForm(FlaskForm):
-    details = TextField()
+    details = TextField(validators=[InputRequired()])
 
     def validate_details(form, field):
         if RE_URL.search(field.data):
@@ -177,7 +178,7 @@ def alert(id):
             csvfile.getvalue()
         )
         mail.send_message("Défaut d'anonymisation sur l'avis CADA {0}".format(advice.id),
-                          recipients=[site.config['ANON_ALERT_MAIL']],
+                          recipients=[current_app.config['ANON_ALERT_MAIL']],
                           html=render_template('anon_alert_mail.html', advice=advice, details=form.details.data),
                           attachments=[attachment]
                           )
@@ -225,12 +226,11 @@ def export_csv():
     return response
 
 
-# @site.errorhandler(404)
+@site.app_errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
 
 def init_app(app):
-    app.errorhandler(400)(page_not_found)
     mail.init_app(app)
     app.register_blueprint(site)
