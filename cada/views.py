@@ -148,6 +148,7 @@ def home():
 def search():
     return render_template('search.html', **search_advices())
 
+
 @site.route('/about')
 def about():
     return render_template('about.html')
