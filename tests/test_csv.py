@@ -23,3 +23,10 @@ def test_export_csv_with_content(client, advice_factory):
     assert response.is_streamed
     reader = csv.reader(io.BytesIO(response.data))
     assert len([row for row in reader]) == 1 + nb_advices
+
+
+def test_export_anonymisation_csv(advice):
+    row = csv.to_anon_row(advice)
+    assert len(row) == 4
+    assert row[0] == advice.id
+    assert row[1] == url_for('site.display', id=advice.id, _external=True)
