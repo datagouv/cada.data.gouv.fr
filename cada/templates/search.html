@@ -78,18 +78,26 @@
                         <span class="glyphicon glyphicon-calendar"></span>
                         {{ advice.session.strftime('%d/%m/%Y') }}
                     </a>
+                    {% for meaning in advice.meanings %}
+                    <a
+                        {% if "défavorable" in meaning.lower() %}
+                        class="label label-danger"
+                        {% elif "favorable" in meaning.lower() %}
+                        class="label label-success"
+                        {% else %}
+                        class="label label-warning"
+                        {% endif %}
+                        title="Conclusion"
+                        href="{{url_for('site.search', meaning=meaning) }}">
+                        <span class="glyphicon glyphicon-comment"></span>
+                        {{ meaning }}
+                    </a>
+                    {% endfor %}
                     {% for topic in advice.topics %}
                     <a class="label label-primary" title="Thème"
                         href="{{url_for('site.search', topic=topic) }}">
                         <span class="glyphicon glyphicon-book"></span>
                         {{ topic }}
-                    </a>
-                    {% endfor %}
-                    {% for meaning in advice.meanings %}
-                    <a class="label label-danger" title="Conclusion"
-                        href="{{url_for('site.search', meaning=meaning) }}">
-                        <span class="glyphicon glyphicon-comment"></span>
-                        {{ meaning }}
                     </a>
                     {% endfor %}
                     {% for tag in advice.tags %}
