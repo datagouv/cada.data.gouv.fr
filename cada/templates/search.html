@@ -79,7 +79,15 @@
                         {{ advice.session.strftime('%d/%m/%Y') }}
                     </a>
                     {% for meaning in advice.meanings %}
-                    <a class="label label-danger" title="Conclusion"
+                    <a
+                        {% if "défavorable" in meaning.lower() %}
+                        class="label label-danger"
+                        {% elif "favorable" in meaning.lower() %}
+                        class="label label-success"
+                        {% else %}
+                        class="label label-warning"
+                        {% endif %}
+                        title="Conclusion"
                         href="{{url_for('site.search', meaning=meaning) }}">
                         <span class="glyphicon glyphicon-comment"></span>
                         {{ meaning }}
