@@ -67,7 +67,15 @@
             </div>
             <div class="panel-body">
                 {% for meaning in advice.meanings %}
-                <a href="{{url_for('site.search', meaning=meaning) }}" class="label label-primary">{{ meaning }}</a>
+                <a 
+                	{% if "défavorable" in meaning.lower() %}
+                    class="label label-danger"
+                    {% elif "favorable" in meaning.lower() %}
+                    class="label label-success"
+                    {% else %}
+                    class="label label-warning"
+                    {% endif %}
+                    href="{{url_for('site.search', meaning=meaning) }}">{{ meaning }}</a>
                 {% endfor %}
             </div>
 
