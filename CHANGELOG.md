@@ -1,3 +1,7 @@
+## Current (in progress)
+
+- Nothing yet
+
 ## 0.2.0 (2018-10-05)
 
 - Upgrade stack to latest dependencies (Flask 1.0 with `flask.cli`, pytest...) [#6](https://github.com/etalab/cada/pull/6)
