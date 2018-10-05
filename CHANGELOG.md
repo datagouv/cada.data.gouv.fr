@@ -1,6 +1,6 @@
 ## Current (in progress)
 
-- Nothing yet
+- Fix advice part roman numerals handling [#13](https://github.com/etalab/cada/pull/13)
 
 ## 0.2.0 (2018-10-05)
 

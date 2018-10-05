@@ -1,6 +1,9 @@
+import pytest
+
 from flask import url_for
 
 from cada import search
+from cada.models import PARTS
 from cada.views import mail
 
 
@@ -15,6 +18,7 @@ def test_render_home_with_content(client, advice_factory):
     assert client.get(url_for('site.home')).status_code == 200
 
 
+@pytest.mark.parametrize('advice__part', PARTS.keys())
 def test_display_advice(client, advice):
     assert client.get(url_for('site.display', id=advice.id)).status_code == 200
 

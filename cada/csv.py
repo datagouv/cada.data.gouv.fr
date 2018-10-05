@@ -49,7 +49,7 @@ def _part(string):
         return 4
 
 
-ROMAN_NUMS = ['I', 'II', 'III', 'IV']
+ROMAN_NUMS = {1: 'I', 2: 'II', 3: 'III', 4: 'IV'}
 
 
 def cleanup(text):
@@ -86,7 +86,7 @@ def to_row(advice):
         ', '.join(advice.topics),
         ', '.join(advice.tags),
         ', '.join(advice.meanings),
-        ROMAN_NUMS[advice.part] if advice.part else '',
+        ROMAN_NUMS.get(advice.part, ''),
         advice.content,
     ]
 
