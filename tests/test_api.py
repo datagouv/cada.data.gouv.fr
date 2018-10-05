@@ -1,6 +1,9 @@
+import pytest
+
 from flask import url_for
 
 from cada import search
+from cada.models import PARTS
 
 
 def test_api_doc_empty(client):
@@ -25,6 +28,7 @@ def test_search_with_content(client, advice_factory):
     assert len(response.json['advices']) == 3
 
 
+@pytest.mark.parametrize('advice__part', PARTS.keys())
 def test_display_advice(client, advice):
     response = client.get(url_for('api.display', id=advice.id))
     assert response.status_code == 200
