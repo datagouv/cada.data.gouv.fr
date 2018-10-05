@@ -43,8 +43,13 @@ def _part(string):
         return 1
     elif string == 'II':
         return 2
-    if string == 'III':
+    elif string == 'III':
         return 3
+    elif string == 'IV':
+        return 4
+
+
+ROMAN_NUMS = ['I', 'II', 'III', 'IV']
 
 
 def cleanup(text):
@@ -81,7 +86,7 @@ def to_row(advice):
         ', '.join(advice.topics),
         ', '.join(advice.tags),
         ', '.join(advice.meanings),
-        ('I' * advice.part) if advice.part else '',
+        ROMAN_NUMS[advice.part] if advice.part else '',
         advice.content,
     ]
 

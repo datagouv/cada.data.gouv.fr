@@ -9,6 +9,8 @@ PARTS = {
     1: {'label': "Avec audition de l'administration", 'help': "L'administration s'est déplacée à la séance"},
     2: {'label': 'Affaire de principe', 'help': "Etude et avis sur de nouveaux cas"},
     3: {'label': 'Affaire courante', 'help': "Avis sur des cas récurrents"},
+    # TODO: ask CADA for proper wording
+    4: {'label': 'Délégué', 'help': 'Avis rendu par délégation'},
 }
 
 
