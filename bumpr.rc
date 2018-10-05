@@ -7,7 +7,7 @@ tag = true
 tag_format = v{version}
 push = true
 tests = pytest
-publish = pytest setup.py bdist_wheel
+publish = python setup.py bdist_wheel
 files =
     README.md
 
