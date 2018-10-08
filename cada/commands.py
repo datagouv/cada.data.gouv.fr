@@ -6,6 +6,7 @@ import logging
 import pkg_resources
 import shutil
 import sys
+import re
 
 from glob import iglob
 from os.path import exists
@@ -205,15 +206,16 @@ def anon():
     '''Check for candidates to anonymization'''
     header(anon.__doc__)
     filename = 'urls_to_check.csv'
+    name_regex = r'(M\.|Mme\.|Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}'
 
     candidates = Advice.objects(__raw__={
         '$or': [
             {'subject': {
-                '$regex': '(Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}',
+                '$regex': name_regex,
                 '$options': 'imx',
             }},
             {'content': {
-                '$regex': '(Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}',
+                '$regex': name_regex,
                 '$options': 'imx',
             }}
         ]
@@ -223,9 +225,21 @@ def anon():
         writer = csv.writer(csvfile)
         # Generate header
         writer.writerow(csv.ANON_HEADER)
-
+        match_regex = r'(M\.|Mme\.|Monsieur|Madame|Docteur|Mademoiselle)\s+([\w\']+)'
         for idx, advice in enumerate(candidates, 1):
-            writer.writerow(csv.to_anon_row(advice))
+            replace = []
+            for possible_location in [advice.subject, advice.content]:
+                matches = re.findall(match_regex, possible_location)
+                if not matches:
+                    continue
+                good_matches = [m[1] for m in matches if len(m) > 1 and len(m[1]) > 3 and m[1][0].isupper()]
+                if not good_matches:
+                    continue
+                replace += good_matches
+                # replace = '"{}"'.format(replace)
+            if not replace:
+                continue
+            writer.writerow(csv.to_anon_row(advice, ",".join(replace), ",".join(["XXX"]*len(replace))))
             echo('.' if idx % 50 else white(idx), nl=False)
         echo(white(idx) if idx % 50 else '')
 
@@ -248,7 +262,7 @@ def fix(csvfile):
             bads.append(id)
             continue
         for source, dest in zip(sources, dests):
-            echo('{0}: Replace {1} with {2}', white(id), white(source), white(dest))
+            echo('{0}: Replace {1} with {2}'.format(white(id), white(source), white(dest)))
             advice.subject = advice.subject.replace(source, dest)
             advice.content = advice.content.replace(source, dest)
         advice.save()
