@@ -34,6 +34,10 @@ CONTEXT_SETTINGS = {
     'help_option_names': ['-?', '-h', '--help'],
 }
 
+KNOWN_PREFIXES = ['M.', 'Mme', 'Monsieur', 'Madame', 'Mlle', 'Docteur', 'Dr', 'Mr', "Maître", "Me" 'Mademoiselle']
+# KNOWN_PREFIXES = ['M.', 'Mme', 'Monsieur', 'Madame', 'Mlle', 'Docteur', 'Dr' 'Mademoiselle', 'Mr', 'Maître', "Me"]
+PREFIXES = '|'.join([re.escape(p) for p in KNOWN_PREFIXES])
+# name_regex = r'(M\.|Mme\.|Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}'
 click.disable_unicode_literals_warning = True
 
 
@@ -206,18 +210,41 @@ def anon():
     '''Check for candidates to anonymization'''
     header(anon.__doc__)
     filename = 'urls_to_check.csv'
-    name_regex = r'(M\.|Mme\.|Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}'
+    name_regex1 = r'(%s)\.?\s+[^X\s\.]{3}' % PREFIXES
+    match_regex = r'(%s)\.?\s+([A-Z][\w\']+)' % PREFIXES
 
+    name_regex = r'(M\.|Mme\.|Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}'
     candidates = Advice.objects(__raw__={
-        '$or': [
-            {'subject': {
-                '$regex': name_regex,
-                '$options': 'imx',
-            }},
-            {'content': {
-                '$regex': name_regex,
-                '$options': 'imx',
-            }}
+        '$and': [{
+                "$or": [{
+                    'subject': {
+                        '$regex': name_regex1,
+                        '$options': 'imx',
+                    }
+                },
+                    {
+                    'content': {
+                        '$regex': name_regex1,
+                        '$options': 'imx',
+                    }
+                    }
+                ]
+            },
+                {
+                '$or': [{
+                    'subject': {
+                        '$regex': match_regex,
+                        '$options': 'mx',
+                    }
+                },
+                    {
+                    'content': {
+                        '$regex': match_regex,
+                        '$options': 'mx',
+                        }
+                    }
+                ]
+            }
         ]
     })
 
@@ -225,7 +252,7 @@ def anon():
         writer = csv.writer(csvfile)
         # Generate header
         writer.writerow(csv.ANON_HEADER)
-        match_regex = r'(M\.|Mme\.|Monsieur|Madame|Docteur|Mademoiselle)\s+([\w\']+)'
+        # match_regex = r'(M\.|Mme\.|Monsieur|Madame|Docteur|Mademoiselle)\s+([\w\']+)'
         for idx, advice in enumerate(candidates, 1):
             replace = []
             for possible_location in [advice.subject, advice.content]:
@@ -234,12 +261,13 @@ def anon():
                     continue
                 good_matches = [m[1] for m in matches if len(m) > 1 and len(m[1]) > 3 and m[1][0].isupper()]
                 if not good_matches:
+                    echo(matches)
+                    echo("\t\t" + possible_location)
                     continue
                 replace += good_matches
-                # replace = '"{}"'.format(replace)
             if not replace:
                 continue
-            writer.writerow(csv.to_anon_row(advice, ",".join(replace), ",".join(["XXX"]*len(replace))))
+            writer.writerow(csv.to_anon_row(advice, ",".join(replace), ",".join(["XXX"] * len(replace))))
             echo('.' if idx % 50 else white(idx), nl=False)
         echo(white(idx) if idx % 50 else '')
 
