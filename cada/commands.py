@@ -34,15 +34,29 @@ CONTEXT_SETTINGS = {
     'help_option_names': ['-?', '-h', '--help'],
 }
 
-KNOWN_PREFIXES = ['M.', 'Mme', 'Monsieur', 'Madame', 'Mlle', 'Docteur', 'Dr', 'Mr', "Maître", "Me" 'Mademoiselle']
-# KNOWN_PREFIXES = ['M.', 'Mme', 'Monsieur', 'Madame', 'Mlle', 'Docteur', 'Dr' 'Mademoiselle', 'Mr', 'Maître', "Me"]
+KNOWN_PREFIXES = ['M.', 'Mme', 'Monsieur', 'Madame', 'Mlle', 'Docteur', 'Dr', 'Mr', 'Maître', 'Me', 'Mademoiselle']
+
 PREFIXES = '|'.join([re.escape(p) for p in KNOWN_PREFIXES])
-# name_regex = r'(M\.|Mme\.|Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}'
 click.disable_unicode_literals_warning = True
 
 
 def color(name, **kwargs):
     return lambda t: click.style(str(t), fg=name, **kwargs).decode('utf8')
+
+
+def get_replacements(candidates, starting_letter='X'):
+    if len(candidates) == 1:
+        return {candidates[0]: starting_letter * 3}
+
+    unique_names = set(candidates)
+    replacement = {}
+    chosen_letter = starting_letter
+    for name in unique_names:
+        if ord(chosen_letter) > ord('Z'):
+            chosen_letter = 'A'
+        replacement[name] = chr(ord(chosen_letter)) * 3
+        chosen_letter = chr(ord(chosen_letter) + 1)
+    return replacement
 
 
 green = color('green', bold=True)
@@ -210,41 +224,18 @@ def anon():
     '''Check for candidates to anonymization'''
     header(anon.__doc__)
     filename = 'urls_to_check.csv'
-    name_regex1 = r'(%s)\.?\s+[^X\s\.]{3}' % PREFIXES
-    match_regex = r'(%s)\.?\s+([A-Z][\w\']+)' % PREFIXES
-
-    name_regex = r'(M\.|Mme\.|Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}'
+    name_regex1 = r'(%s)\s+[^X\s\.]{3}' % PREFIXES
+    match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)' % PREFIXES
     candidates = Advice.objects(__raw__={
-        '$and': [{
-                "$or": [{
-                    'subject': {
-                        '$regex': name_regex1,
-                        '$options': 'imx',
-                    }
-                },
-                    {
-                    'content': {
-                        '$regex': name_regex1,
-                        '$options': 'imx',
-                    }
-                    }
-                ]
-            },
-                {
-                '$or': [{
-                    'subject': {
-                        '$regex': match_regex,
-                        '$options': 'mx',
-                    }
-                },
-                    {
-                    'content': {
-                        '$regex': match_regex,
-                        '$options': 'mx',
-                        }
-                    }
-                ]
-            }
+        '$or': [
+            {'subject': {
+                '$regex': name_regex1,
+                '$options': 'imx',
+            }},
+            {'content': {
+                '$regex': name_regex1,
+                '$options': 'imx',
+            }}
         ]
     })
 
@@ -252,22 +243,20 @@ def anon():
         writer = csv.writer(csvfile)
         # Generate header
         writer.writerow(csv.ANON_HEADER)
-        # match_regex = r'(M\.|Mme\.|Monsieur|Madame|Docteur|Mademoiselle)\s+([\w\']+)'
         for idx, advice in enumerate(candidates, 1):
             replace = []
             for possible_location in [advice.subject, advice.content]:
                 matches = re.findall(match_regex, possible_location)
                 if not matches:
                     continue
-                good_matches = [m[1] for m in matches if len(m) > 1 and len(m[1]) > 3 and m[1][0].isupper()]
+                good_matches = [m[1] for m in matches]
                 if not good_matches:
-                    echo(matches)
-                    echo("\t\t" + possible_location)
                     continue
                 replace += good_matches
             if not replace:
                 continue
-            writer.writerow(csv.to_anon_row(advice, ",".join(replace), ",".join(["XXX"] * len(replace))))
+            replacements = get_replacements(replace)
+            writer.writerow(csv.to_anon_row(advice, ','.join(replace), ','.join([replacements[n] for n in replace])))
             echo('.' if idx % 50 else white(idx), nl=False)
         echo(white(idx) if idx % 50 else '')
 
