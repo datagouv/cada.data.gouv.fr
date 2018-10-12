@@ -33,11 +33,13 @@
                 Type de consultation
             </div>
             <div class="panel-body">
+                {% if advice.part  %}
                 <a href="{{ url_for('site.search', part=advice.part) }}"
                     data-toggle="popover" title="{{advice.part|part_label}}"
                     data-content="{{advice.part|part_help}}" data-trigger="hover">
                     {{ advice.part|part_label }}
                 </a>
+                {% endif %}
             </div>
 
             <div class="panel-heading">
