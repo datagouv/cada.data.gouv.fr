@@ -224,20 +224,22 @@ def anon():
     '''Check for candidates to anonymization'''
     header(anon.__doc__)
     filename = 'urls_to_check.csv'
-    name_regex1 = r'(%s)\s+[^X\s\.]{3}' % PREFIXES
+
+    # Match all non XXX after prefix
+    filter_regex = r'(%s)\s+[^X\s\.]{3}' % PREFIXES
+
+    # Match anything that begins by upper case after prefix
     match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)' % PREFIXES
-    candidates = Advice.objects(__raw__={
-        '$or': [
-            {'subject': {
-                '$regex': name_regex1,
-                '$options': 'imx',
-            }},
-            {'content': {
-                '$regex': name_regex1,
-                '$options': 'imx',
-            }}
-        ]
-    })
+
+    pipeline = [
+        {'$match': {'$or': [{'subject': {'$regex': filter_regex, '$options': 'imx'}},
+                            {'content': {'$regex': filter_regex, '$options': 'imx'}}]}},
+
+        {'$match': {'$or': [{'subject': {'$regex': match_regex, '$options': 'mx'}},
+                            {'content': {'$regex': match_regex, '$options': 'mx'}}]}},
+    ]
+
+    candidates = Advice.objects.aggregate(*pipeline)
 
     with open(filename, 'wb') as csvfile:
         writer = csv.writer(csvfile)
@@ -245,7 +247,7 @@ def anon():
         writer.writerow(csv.ANON_HEADER)
         for idx, advice in enumerate(candidates, 1):
             replace = []
-            for possible_location in [advice.subject, advice.content]:
+            for possible_location in [advice['subject'], advice['content']]:
                 matches = re.findall(match_regex, possible_location)
                 if not matches:
                     continue
@@ -260,7 +262,7 @@ def anon():
             echo('.' if idx % 50 else white(idx), nl=False)
         echo(white(idx) if idx % 50 else '')
 
-    success('Total: {0} candidates', len(candidates))
+    success('Total: {0} candidates', idx)
 
 
 @cli.command()
