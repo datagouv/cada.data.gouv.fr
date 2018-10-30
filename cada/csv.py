@@ -92,4 +92,8 @@ def to_row(advice):
 
 
 def to_anon_row(advice, replace='', with_=''):
-    return advice['_id'], url_for('site.display', id=advice['_id'], _external=True), replace, with_
+    if isinstance(advice, Advice):
+        return advice.id, url_for('site.display', id=advice.id, _external=True), replace, with_
+    elif isinstance(advice, dict):
+        return advice['_id'], url_for('site.display', id=advice['_id'], _external=True), replace, with_
+
