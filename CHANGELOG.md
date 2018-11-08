@@ -4,6 +4,7 @@
 - Colorize advices labels [#14](https://github.com/etalab/cada/pull/14)
 - Fixes about page [#11](https://github.com/etalab/cada/pull/11)
 - Fix the cli encoding handling as well as some formatting issues [#18](https://github.com/etalab/cada/pull/18)
+- Footer fixes (svg logo, alignments, https links) [#20](https://github.com/etalab/cada/pull/20)
 
 ## 0.2.0 (2018-10-05)
 

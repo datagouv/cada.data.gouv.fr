@@ -254,7 +254,6 @@ section.footer a {
 }
 
 section.footer h5 {
-    font-family: @title-font;
     font-size: 15px;
     margin: 26px 0px 10px;
     font-weight: bold;
@@ -273,6 +272,7 @@ section.footer li a {
 
 section.footer .logo {
     margin: 20px 0px 8px;
+    max-width: 100%;
 }
 
 section.footer footer.row {
@@ -282,7 +282,7 @@ section.footer footer.row {
 section.footer .bottom-right {
     position: absolute;
     bottom: -40px;
-    right: 0px;
+    right: 15px;
 }
 
 section.footer .bottom-right a {
