@@ -36,8 +36,17 @@ CONTEXT_SETTINGS = {
 click.disable_unicode_literals_warning = True
 
 
+def safe_unicode(string):
+    '''Safely transform any object into utf8 encoded bytes'''
+    if not isinstance(string, basestring):
+        string = unicode(string)
+    if isinstance(string, unicode):
+        string = string.encode('utf8')
+    return string
+
+
 def color(name, **kwargs):
-    return lambda t: click.style(str(t), fg=name, **kwargs).decode('utf8')
+    return lambda t: click.style(safe_unicode(t), fg=name, **kwargs).decode('utf8')
 
 
 green = color('green', bold=True)
@@ -46,38 +55,46 @@ red = color('red', bold=True)
 cyan = color('cyan', bold=True)
 magenta = color('magenta', bold=True)
 white = color('white', bold=True)
-echo = click.echo
+
+
+def echo(msg, *args, **kwargs):
+    '''Wraps click.echo, handles formatting and check encoding'''
+    file = kwargs.pop('file', None)
+    nl = kwargs.pop('nl', True)
+    err = kwargs.pop('err', False)
+    color = kwargs.pop('color', None)
+    msg = safe_unicode(msg).format(*args, **kwargs)
+    click.echo(msg, file=file, nl=nl, err=err, color=color)
 
 
 def header(msg, *args, **kwargs):
     '''Display an header'''
-    msg = msg.format(*args, **kwargs)
-    echo(' '.join((yellow(HEADER), white(msg), yellow(HEADER))))
+    msg = ' '.join((yellow(HEADER), white(msg), yellow(HEADER)))
+    echo(msg, *args, **kwargs)
 
 
 def success(msg, *args, **kwargs):
     '''Display a success message'''
-    msg = msg.format(*args, **kwargs)
-    echo('{0} {1}'.format(green(OK), white(msg)))
+    echo('{0} {1}'.format(green(OK), white(msg)), *args, **kwargs)
 
 
 def warning(msg, *args, **kwargs):
     '''Display a warning message'''
-    msg = msg.format(*args, **kwargs)
-    echo('{0} {1}'.format(yellow(WARNING), msg))
+    msg = '{0} {1}'.format(yellow(WARNING), msg)
+    echo(msg, *args, **kwargs)
 
 
-def error(msg, details=None):
+def error(msg, details=None, *args, **kwargs):
     '''Display an error message with optionnal details'''
     msg = '{0} {1}'.format(red(KO), white(msg))
     if details:
-        msg = '\n'.join((msg, str(details)))
-    echo(format_multiline(msg))
+        msg = '\n'.join((msg, safe_unicode(details)))
+    echo(format_multiline(msg), *args, **kwargs)
 
 
-def exit_with_error(msg='Aborted', details=None, code=-1):
+def exit_with_error(msg='Aborted', details=None, code=-1, *args, **kwargs):
     '''Exit with error'''
-    error(msg, details)
+    error(msg, details=details, *args, **kwargs)
     sys.exit(code)
 
 
@@ -162,7 +179,7 @@ def load(patterns, full_reindex):
 def reindex():
     '''Reindex all advices'''
     header('Reindexing all advices')
-    echo('Deleting index {0}'.format(white(es.index_name)))
+    echo('Deleting index {0}', white(es.index_name))
     if es.indices.exists(es.index_name):
         es.indices.delete(index=es.index_name)
     es.initialize()
@@ -194,7 +211,7 @@ def static(path, no_input):
             exit_with_error()
         shutil.rmtree(path)
 
-    echo('Copying assets into {0}'.format(white(path)))
+    echo('Copying assets into {0}', white(path))
     shutil.copytree(assets.directory, path)
 
     success('Done')

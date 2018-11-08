@@ -3,6 +3,7 @@
 - Fix advice part roman numerals handling [#13](https://github.com/etalab/cada/pull/13)
 - Colorize advices labels [#14](https://github.com/etalab/cada/pull/14)
 - Fixes about page [#11](https://github.com/etalab/cada/pull/11)
+- Fix the cli encoding handling as well as some formatting issues [#18](https://github.com/etalab/cada/pull/18)
 
 ## 0.2.0 (2018-10-05)
 
