@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Sans titre{% endblock %} - CADA</title>
 
     {% assets "css" %}
@@ -9,7 +10,7 @@
     {% endassets %}
 </head>
 <body>
-    <div class="main-wrapper">
+    <main class="wrapper">
         <nav class="navbar navbar-default navbar-static-top" role="navigation">
             <div class="container">
                 <!-- Brand and toggle get grouped for better mobile display -->
@@ -67,7 +68,7 @@
         </div>
 
         {% include "footer.html" %}
-    </div>
+    </main>
 
     {% assets "js" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>

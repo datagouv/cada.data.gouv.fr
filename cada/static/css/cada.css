@@ -269,22 +269,16 @@ section.footer .bottom-right a {
     padding: 3px 10px;
 }
 
-.main-wrapper {
+main.wrapper {
    min-height:100%;
    position: relative;
    margin: 0;
    padding: 0;
 }
 
-.main-wrapper > .container {
-   padding-bottom: 241px;   /* Height of the footer */
-}
-
 section.footer {
-   position:absolute;
-   bottom:0;
    width:100%;
-   height: 241px;   /* Height of the footer */
+   min-height: 241px;   /* Height of the footer */
 }
 
 
