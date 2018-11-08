@@ -217,6 +217,11 @@ ul.search-result li .subtitle span {
     padding-bottom: 30px;
 }
 
+@media (max-width: 600px) {
+    .page h1 > small {
+        display: block;
+    }
+}
 
 /*footer style*/
 section.footer {

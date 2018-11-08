@@ -41,12 +41,16 @@
                     <form class="navbar-form navbar-right" role="search"
                         action="{{ url_for('site.search') }}">
                         <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Recherche"
-                                name="q" value="{{ request.args.q }}">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Recherche"
+                                    name="q" value="{{ request.args.q }}">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-default">
-                            <span class="glyphicon glyphicon-search"></span>
-                        </button>
                     </form>
                     {% endif %}
                 </div>
