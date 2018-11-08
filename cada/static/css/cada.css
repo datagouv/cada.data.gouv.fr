@@ -273,6 +273,7 @@ section.footer li a {
 
 section.footer .logo {
     margin: 20px 0px 8px;
+    max-width: 100%;
 }
 
 section.footer footer.row {
