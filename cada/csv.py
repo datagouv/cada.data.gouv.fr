@@ -68,7 +68,7 @@ def from_row(row):
         subject=cleanup(subject),
         topics=[t.title() for t in cleanup(row[6]).split(', ')],
         tags=[tag.strip() for tag in row[7].split(',') if tag.strip()],
-        meanings=cleanup(row[8]).split(', '),
+        meanings=cleanup(row[8]).replace(' / ', '/').split(', '),
         part=_part(row[9]),
         content=cleanup(row[10]),
     )
