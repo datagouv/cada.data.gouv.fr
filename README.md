@@ -28,7 +28,7 @@ You can install Cada with pip:
 $ pip install cada
 ```
 
-You need to create the cada working directory, designed by ``$HOME`` in this documentation:
+You need to create the cada working directory, denoted by ``$HOME`` in this documentation:
 
 ```bash
 $ mkdir -p $HOME && cd $HOME
