@@ -41,7 +41,7 @@ $ cada runserver
 
 ### local development environment
 
-Please make sure you are in a clean (virtualenv)[https://virtualenv.pypa.io/en/stable/].
+Please make sure you are in a clean [virtualenv](https://virtualenv.pypa.io/en/stable/).
 
 ```bash
 $ git clone https://github.com/etalab/cada
