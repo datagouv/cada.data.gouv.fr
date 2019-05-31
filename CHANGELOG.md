@@ -6,6 +6,7 @@
 - Fix the cli encoding handling as well as some formatting issues [#18](https://github.com/etalab/cada/pull/18)
 - Footer fixes (svg logo, alignments, https links) [#20](https://github.com/etalab/cada/pull/20)
 - Upgrade jQuery, Bootstrap and Flatly assets and fixes responsive layout [#21](https://github.com/etalab/cada/pull/21)
+- Fix unicode issue [#26](https://github.com/etalab/cada.data.gouv.fr/pull/26)
 
 ## 0.2.0 (2018-10-05)
 
