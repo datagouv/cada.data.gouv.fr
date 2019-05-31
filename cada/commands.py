@@ -11,6 +11,8 @@ from os.path import exists
 from webassets.script import CommandLineEnvironment
 from flask.cli import FlaskGroup, shell_command, run_command, routes_command
 
+from tqdm import tqdm
+
 from cada import create_app, csv
 from cada.assets import assets
 from cada.models import Advice
@@ -183,12 +185,12 @@ def reindex():
     es.initialize()
 
     idx = 0
-    for idx, advice in enumerate(Advice.objects, 1):
+    for advice in tqdm(Advice.objects):
         index(advice)
-        echo('.' if idx % 50 else white(idx), nl=False)
-    echo(white(idx) if idx % 50 else '')
+
     es.indices.refresh(index=es.index_name)
-    success('Indexed {0} advices', idx)
+
+    success('Indexed {0} advices', len(Advice.objects))
 
 
 @cli.command()
