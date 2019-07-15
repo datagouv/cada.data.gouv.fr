@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-# from __future__ import unicode_literals, print_function
-
 import click
 import logging
 import pkg_resources
