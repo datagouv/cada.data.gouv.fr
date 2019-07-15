@@ -1,4 +1,4 @@
-## Current (in progress)
+## 0.2.1 (2019-07-15)
 
 - Fix advice part roman numerals handling [#13](https://github.com/etalab/cada/pull/13)
 - Colorize advices labels [#14](https://github.com/etalab/cada/pull/14)
