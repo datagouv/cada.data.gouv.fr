@@ -1,3 +1,7 @@
+## Current (in progress)
+
+- Nothing yet
+
 ## 0.2.1 (2019-07-15)
 
 - Fix advice part roman numerals handling [#13](https://github.com/etalab/cada/pull/13)
