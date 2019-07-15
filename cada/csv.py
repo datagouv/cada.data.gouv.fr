@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, print_function
-
-import unicodecsv
+import csv
 
 from flask import url_for
 from datetime import datetime
@@ -29,12 +27,12 @@ ANON_HEADER = ('id', 'url', 'replace', 'with')
 
 def reader(f):
     '''CSV Reader factory for CADA format'''
-    return unicodecsv.reader(f, encoding='utf-8', delimiter=b',', quotechar=b'"')
+    return csv.reader(f, delimiter=',', quotechar='"')
 
 
 def writer(f):
     '''CSV writer factory for CADA format'''
-    return unicodecsv.writer(f, encoding='utf-8', delimiter=b',', quotechar=b'"')
+    return csv.writer(f, delimiter=',', quotechar='"')
 
 
 def _part(string):

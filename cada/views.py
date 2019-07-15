@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-import cStringIO as StringIO
+#from __future__ import unicode_literals
+import io
 import re
 
 from datetime import datetime
 
-from urlparse import urlsplit, urlunsplit
+from urllib.parse import urlsplit, urlunsplit
 
 from flask import Blueprint, abort, render_template, url_for, request, flash, Response, redirect, current_app
 from flask_mail import Attachment, Mail
@@ -173,7 +172,7 @@ def alert(id):
     advice = Advice.objects.get_or_404(id=id)
     form = AlertAnonForm()
     if form.validate_on_submit():
-        csvfile = StringIO.StringIO()
+        csvfile = io.StringIO()
         writer = csv.writer(csvfile)
         writer.writerow(csv.ANON_HEADER)
         writer.writerow(csv.to_anon_row(advice))
@@ -210,22 +209,21 @@ def sitemap():
 @site.route('/export')
 def export_csv():
     def generate():
-        csvfile = StringIO.StringIO()
+        csvfile = io.StringIO()
         writer = csv.writer(csvfile)
         # Generate header
         writer.writerow(csv.HEADER)
         yield csvfile.getvalue()
 
         for advice in Advice.objects.order_by('id'):
-            csvfile = StringIO.StringIO()
+            csvfile = io.StringIO()
             writer = csv.writer(csvfile)
             writer.writerow(csv.to_row(advice))
             yield csvfile.getvalue()
 
     date = datetime.now().date().isoformat()
     headers = {
-        b'Content-Disposition': 'attachment; filename=cada-{0}.csv'.format(date),
-        # b'X-Accel-Buffering': 'no',
+        'Content-Disposition': 'attachment; filename=cada-{0}.csv'.format(date)
     }
     response = Response(generate(), mimetype="text/csv", headers=headers)
     return response

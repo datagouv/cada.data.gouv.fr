@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import logging
 
 from datetime import datetime
@@ -161,7 +159,7 @@ def build_facet_queries():
     for name, field in FACETS.items():
         if name in request.args:
             value = request.args[name]
-            for term in [value] if isinstance(value, basestring) else value:
+            for term in [value] if isinstance(value, str) else value:
                 queries.append({'term': {field: term}})
     return queries
 
@@ -183,7 +181,7 @@ def build_aggs():
 def build_sort():
     '''Build sort query paramter from kwargs'''
     sorts = request.args.getlist('sort')
-    sorts = [sorts] if isinstance(sorts, basestring) else sorts
+    sorts = [sorts] if isinstance(sorts, str) else sorts
     sorts = [s.split(' ') for s in sorts]
     return [{SORTS[s]: d} for s, d in sorts if s in SORTS]
 
@@ -209,7 +207,7 @@ def search_advices():
     facets = {}
     for name, content in result.get('aggregations', {}).items():
         actives = request.args.get(name)
-        actives = [actives] if isinstance(actives, basestring) else actives or []
+        actives = [actives] if isinstance(actives, str) else actives or []
         facets[name] = [
             (term['key'], term['doc_count'], term['key'] in actives)
             for term in content.get('buckets', [])
