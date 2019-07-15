@@ -1,6 +1,6 @@
 ## Current (in progress)
 
-- Python 3 [#27](https://github.com/etalab/cada.data.gouv.fr/pull/27)
+- Python 3 [#28](https://github.com/etalab/cada.data.gouv.fr/pull/28)
 
 ## 0.2.1 (2019-07-15)
 
