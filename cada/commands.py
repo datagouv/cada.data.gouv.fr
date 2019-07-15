@@ -18,11 +18,11 @@ from cada.search import es, index
 
 log = logging.getLogger(__name__)
 
-OK = '✔'.encode('utf8')
-KO = '✘'.encode('utf8')
-INFO = '➢'.encode('utf8')
-WARNING = '⚠'.encode('utf8')
-HEADER = '✯'.encode('utf8')
+OK = '✔'
+KO = '✘'
+INFO = '➢'
+WARNING = '⚠'
+HEADER = '✯'
 
 NO_CAST = (int, float, bool)
 
