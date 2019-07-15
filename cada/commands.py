@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, print_function
+# from __future__ import unicode_literals, print_function
 
 import click
 import logging
@@ -37,16 +37,16 @@ click.disable_unicode_literals_warning = True
 
 
 def safe_unicode(string):
-    '''Safely transform any object into utf8 encoded bytes'''
-    if not isinstance(string, basestring):
-        string = unicode(string)
-    if isinstance(string, unicode):
-        string = string.encode('utf8')
+    # '''Safely transform any object into utf8 encoded bytes'''
+    # if not isinstance(string, str):
+    #     string = unicode(string)
+    # if isinstance(string, unicode):
+    #     string = string.encode('utf8')
     return string
 
 
 def color(name, **kwargs):
-    return lambda t: click.style(safe_unicode(t), fg=name, **kwargs).decode('utf8')
+    return lambda t: click.style(safe_unicode(str(t)), fg=name, **kwargs)
 
 
 green = color('green', bold=True)

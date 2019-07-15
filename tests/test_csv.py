@@ -12,7 +12,7 @@ def test_export_csv_empty(client):
     assert response.status_code == 200
     assert response.mimetype == 'text/csv'
     assert response.is_streamed
-    reader = csv.reader(io.BytesIO(response.data))
+    reader = csv.reader(response.data.decode("utf-8").strip().split("\n"))
     assert len([row for row in reader]) == 1
 
 
@@ -25,7 +25,7 @@ def test_export_csv_with_content(client, advice, advice_factory):
     assert response.status_code == 200
     assert response.mimetype == 'text/csv'
     assert response.is_streamed
-    reader = csv.reader(io.BytesIO(response.data))
+    reader = csv.reader(response.data.decode("utf-8").strip().split("\n"))
     assert len([row for row in reader]) == 1 + total_advices  # Include headers
 
 
