@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-
 from flask import Blueprint, render_template, jsonify
 
 from cada.models import Advice

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, print_function
-
 import click
 import logging
 import pkg_resources
@@ -20,11 +18,11 @@ from cada.search import es, index
 
 log = logging.getLogger(__name__)
 
-OK = '✔'.encode('utf8')
-KO = '✘'.encode('utf8')
-INFO = '➢'.encode('utf8')
-WARNING = '⚠'.encode('utf8')
-HEADER = '✯'.encode('utf8')
+OK = '✔'
+KO = '✘'
+INFO = '➢'
+WARNING = '⚠'
+HEADER = '✯'
 
 NO_CAST = (int, float, bool)
 
@@ -37,16 +35,16 @@ click.disable_unicode_literals_warning = True
 
 
 def safe_unicode(string):
-    '''Safely transform any object into utf8 encoded bytes'''
-    if not isinstance(string, basestring):
-        string = unicode(string)
-    if isinstance(string, unicode):
-        string = string.encode('utf8')
+    # '''Safely transform any object into utf8 encoded bytes'''
+    # if not isinstance(string, str):
+    #     string = unicode(string)
+    # if isinstance(string, unicode):
+    #     string = string.encode('utf8')
     return string
 
 
 def color(name, **kwargs):
-    return lambda t: click.style(safe_unicode(t), fg=name, **kwargs).decode('utf8')
+    return lambda t: click.style(safe_unicode(str(t)), fg=name, **kwargs)
 
 
 green = color('green', bold=True)

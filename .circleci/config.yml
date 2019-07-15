@@ -4,7 +4,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: python:2.7
+      - image: python:3.6
       - image: mongo:3.2
       - image: udata/elasticsearch:2.4.5
     steps:
@@ -23,6 +23,7 @@ jobs:
       - run:
           name: Install python dependencies
           command: |
+            pip install virtualenv
             virtualenv venv
             source venv/bin/activate
             pip install -e .[test,report]
@@ -67,7 +68,7 @@ jobs:
 
   publish:
     docker:
-      - image: python:2.7
+      - image: python:3.6
     steps:
       - attach_workspace:
           at: .
