@@ -1,5 +1,7 @@
 ## Current (in progress)
 
+- Elastic Search 7.2 [#29](https://github.com/etalab/cada.data.gouv.fr/pull/29)
+- Mongo 4.1 [#29](https://github.com/etalab/cada.data.gouv.fr/pull/29)
 - Python 3 [#28](https://github.com/etalab/cada.data.gouv.fr/pull/28)
 
 ## 0.2.1 (2019-07-15)
