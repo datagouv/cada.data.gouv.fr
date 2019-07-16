@@ -4,7 +4,7 @@ Flask-Mail==0.9.1
 Flask-WTF==0.14.2
 Jinja2==2.10
 # Elasticsearch 2.x
-elasticsearch>=2.0.0,<3.0.0
+elasticsearch==7.0.2
 flask-mongoengine==0.9.5
 unicodecsv==0.14.1
 cssmin==0.2.0

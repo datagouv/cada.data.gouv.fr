@@ -12,43 +12,56 @@ log = logging.getLogger(__name__)
 
 MAPPING = {
     'properties': {
-        'id': {'type': 'string', 'index': 'not_analyzed'},
+        'id': {'type': 'text', 'index': 'false'},
         'administration': {
-            'type': 'string',
+            'type': 'text',
             'analyzer': 'fr_analyzer',
             'fields': {
-                'raw': {'type': 'string', 'index': 'not_analyzed'}
+                'raw': {'type': 'text', 'index': 'false'},
+                'keyword': {'type': 'keyword'}
             }
         },
-        'type': {'type': 'string', 'index': 'not_analyzed'},
+        'type': {'type': 'text', 'index': 'false'},
         'session': {
-            'type': 'date', 'format': 'YYYY-MM-dd',
+            'type': 'date',
+            'format': 'yyyy-MM-dd',
+            'store': 'true',
             'fields': {
-                'raw': {'type': 'string', 'index': 'not_analyzed'}
+                'raw': {'type': 'text', 'index': 'false'},
+                'keyword': {'type': 'keyword'}
             }
         },
         'subject': {
-            'type': 'string',
+            'type': 'text',
             'analyzer': 'fr_analyzer',
             'fields': {
-                'raw': {'type': 'string', 'index': 'not_analyzed'}
+                'raw': {'type': 'text', 'index': 'false'},
+                'keyword': {'type': 'keyword'}
             }
         },
         'topics': {
-            'type': 'string',
+            'type': 'text',
             'analyzer': 'fr_analyzer',
             'fields': {
-                'raw': {'type': 'string', 'index': 'not_analyzed'}
+                'raw': {'type': 'text', 'index': 'false'},
+                'keyword': {'type': 'keyword'}
             }
         },
-        'tags': {'type': 'string', 'index': 'not_analyzed'},
-        'meanings': {'type': 'string', 'index': 'not_analyzed'},
+        'tags': {
+            'type': 'text',
+            'index': 'false',
+            'fields': {
+                'raw': {'type': 'text', 'index': 'false'},
+                'keyword': {'type': 'keyword'}
+            }
+        },
+        'meanings': {'type': 'text', 'index': 'false'},
         'part': {'type': 'short'},
         'content': {
-            'type': 'string',
+            'type': 'text',
             'analyzer': 'fr_analyzer',
             'fields': {
-                'raw': {'type': 'string', 'index': 'not_analyzed'}
+                'raw': {'type': 'text', 'index': 'false'}
             }
         },
     }
@@ -60,7 +73,7 @@ FIELDS = (
     'content^3',
     'administration',
     'topics',
-    'tags',
+    'tags.keyword',
 )
 
 SORTS = {
@@ -70,32 +83,31 @@ SORTS = {
 }
 
 FACETS = {
-    'administration': 'administration.raw',
-    # 'type': 'type',
-    'tag': 'tags',
-    'topic': 'topics.raw',
-    'session': 'session.raw',
+    'administration': 'administration.keyword',
+    'tag': 'tags.keyword',
+    'topic': 'topics.keyword',
+    'session': 'session.keyword',
     'part': 'part',
-    'meaning': 'meanings',
+    'meaning': 'meanings.keyword',
 }
 
-ANALSYS = {
-    "filter": {
-        "fr_stop_filter": {
-            "type": "stop",
-            "stopwords": ["_french_"]
+ANALYSIS = {
+    'filter': {
+        'fr_stop_filter': {
+            'type': 'stop',
+            'stopwords': ['_french_']
         },
-        "fr_stem_filter": {
-            "type": "stemmer",
-            "name": "minimal_french"
+        'fr_stem_filter': {
+            'type': 'stemmer',
+            'name': 'minimal_french'
         }
     },
-    "analyzer": {
-        "fr_analyzer": {
-            "type": "custom",
-            "tokenizer": "icu_tokenizer",
-            "filter": ["icu_folding", "icu_normalizer", "fr_stop_filter", "fr_stem_filter"],
-            "char_filter": ["html_strip"]
+    'analyzer': {
+        'fr_analyzer': {
+            'type': 'custom',
+            'tokenizer': 'icu_tokenizer',
+            'filter': ['icu_folding', 'icu_normalizer', 'fr_stop_filter', 'fr_stem_filter'],
+            'char_filter': ['html_strip']
         }
     }
 }
@@ -130,9 +142,9 @@ class ElasticSearch(object):
         if es.indices.exists(self.index_name):
             es.indices.put_mapping(index=self.index_name, doc_type=DOCTYPE, body=MAPPING)
         else:
-            es.indices.create(self.index_name, {
-                'mappings': {'advice': MAPPING},
-                'settings': {'analysis': ANALSYS},
+            es.indices.create(index=self.index_name, body={
+                'mappings': MAPPING,
+                'settings': {'analysis': ANALYSIS},
             })
 
 
@@ -158,8 +170,7 @@ def build_facet_queries():
     queries = []
     for name, field in FACETS.items():
         if name in request.args:
-            value = request.args[name]
-            for term in [value] if isinstance(value, str) else value:
+            for term in request.args.getlist(name):
                 queries.append({'term': {field: term}})
     return queries
 
@@ -191,13 +202,13 @@ def search_advices():
     page_size = int(request.args.get('page_size', DEFAULT_PAGE_SIZE))
     start = (page - 1) * page_size
 
-    result = es.search(index=es.index_name, doc_type=DOCTYPE, body={
+    result = es.search(index=es.index_name, body={
+        'track_total_hits': True,
         'query': build_query(),
         'aggs': build_aggs(),
         'from': start,
         'size': page_size,
-        'sort': build_sort(),
-        'fields': [],
+        'sort': build_sort()
     })
 
     ids = [hit['_id'] for hit in result.get('hits', {}).get('hits', [])]
@@ -218,7 +229,7 @@ def search_advices():
         'facets': facets,
         'page': page,
         'page_size': page_size,
-        'total': result['hits']['total'],
+        'total': result['hits']['total']['value'],
     }
 
 
@@ -241,20 +252,21 @@ def home_data():
     result = es.search(es.index_name, body={
         'query': {'match_all': {}},
         'size': 0,
+        'track_total_hits': True,
         'aggs': {
             'tags': {
-                'terms': {'field': 'tags', 'size': 20}
+                'terms': {'field': 'tags.keyword', 'size': 20}
             },
             'topics': {
                 'terms': {
-                    'field': 'topics.raw',
-                    "exclude": "/*",  # Exclude subtopics
+                    'field': 'topics.keyword',
+                    'exclude': '/*',  # Exclude subtopics
                     'size': 20,
                 }
             },
-            "sessions": {
-                "stats": {
-                    "field": "session"
+            'sessions': {
+                'stats': {
+                    'field': 'session'
                 }
             }
         },
@@ -265,7 +277,7 @@ def home_data():
     return {
         'topics': agg_to_list(result, 'topics'),
         'tag_cloud': agg_to_list(result, 'tags'),
-        'total': result['hits']['total'],
+        'total': result['hits']['total']['value'],
         'sessions': {
             'from': ts_to_dt(sessions.get('min')),
             'to': ts_to_dt(sessions.get('max')),
@@ -283,7 +295,7 @@ def index(advice):
             topics.append(parts[0])
 
     try:
-        es.index(index=es.index_name, doc_type=DOCTYPE, id=advice.id, body={
+        es.index(index=es.index_name, id=advice.id, body={
             'id': advice.id,
             'administration': advice.administration,
             'type': advice.type,

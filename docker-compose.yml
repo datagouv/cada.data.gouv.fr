@@ -1,16 +1,17 @@
-version: '2'
+version: '3'
 
 services:
   db:
-    image: mongo:3.2
-    command: mongod
+    image: mongo:4.1
     volumes:
       - data-db:/data/db
     ports:
       - "27017:27017"
 
   search:
-    image: udata/elasticsearch:2.4.5
+    build: ./elasticsearch
+    environment:
+      discovery.type: single-node
     volumes:
       - data-search:/usr/share/elasticsearch/data
     ports:

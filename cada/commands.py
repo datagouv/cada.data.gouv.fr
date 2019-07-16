@@ -153,7 +153,7 @@ def load(patterns, full_reindex):
             with open(filename) as f:
                 reader = csv.reader(f)
                 # Skip header
-                reader.next()
+                reader.__next__()
                 for idx, row in enumerate(reader, 1):
                     try:
                         advice = csv.from_row(row)
