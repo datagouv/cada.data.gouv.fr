@@ -5,8 +5,11 @@ jobs:
   build:
     docker:
       - image: python:3.6
-      - image: mongo:3.2
-      - image: udata/elasticsearch:2.4.5
+      - image: mongo:4.1
+      - image: etalab/cada-elasticsearch:7.2
+        environment:
+            discovery.type: single-node
+
     steps:
       - checkout
       - run:
