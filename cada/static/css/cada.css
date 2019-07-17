@@ -274,6 +274,15 @@ section.footer .bottom-right a {
     padding: 3px 10px;
 }
 
+main {
+    display: flex;
+    flex-direction: column;
+}
+
+main > div {
+    flex-grow: 1;
+}
+
 main.wrapper {
    min-height:100%;
    position: relative;
