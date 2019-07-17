@@ -161,7 +161,6 @@ def load(patterns, full_reindex):
                 for row in tqdm(list(reader)):
                     try:
                         advice = csv.from_row(row)
-                        skipped = False
                         if not full_reindex:
                             index(advice)
                     except Exception:
@@ -275,6 +274,7 @@ def fix(csvfile):
         echo('{0}: Replacements length not matching', white(id))
 
     success('Done')
+
 
 @cli.command()
 def burnthemall():
