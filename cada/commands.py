@@ -154,23 +154,20 @@ def load(patterns, full_reindex):
             echo('Loading {}'.format(white(filename)))
             with open(filename) as f:
                 reader = csv.reader(f)
+
                 # Skip header
                 reader.__next__()
-                for idx, row in enumerate(reader, 1):
+
+                for row in tqdm(list(reader)):
                     try:
                         advice = csv.from_row(row)
                         skipped = False
                         if not full_reindex:
                             index(advice)
-                        echo('.' if idx % 50 else white(idx), nl=False)
                     except Exception:
-                        echo(cyan('s') if idx % 50 else white('{0}(s)'.format(idx)), nl=False)
-                        skipped = True
-                if skipped:
-                    echo(white('{}(s)'.format(idx)) if idx % 50 else '')
-                else:
-                    echo(white(idx) if idx % 50 else '')
-                success('Processed {0} rows'.format(idx))
+                        print(WARNING)
+
+                success('Processed {0} rows'.format(''))
     if full_reindex:
         reindex()
 
@@ -184,7 +181,6 @@ def reindex():
         es.indices.delete(index=es.index_name)
     es.initialize()
 
-    idx = 0
     for advice in tqdm(Advice.objects):
         index(advice)
 
@@ -279,3 +275,10 @@ def fix(csvfile):
         echo('{0}: Replacements length not matching', white(id))
 
     success('Done')
+
+@cli.command()
+def burnthemall():
+    '''Delete all advices'''
+
+    Advice.objects.delete()
+    echo('{0} All advices have been deleted', green(OK))
