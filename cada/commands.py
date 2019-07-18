@@ -241,22 +241,9 @@ def anon():
     filename = 'urls_to_check.csv'
 
     # This regex is to match what is found by our mongodb query.
-    match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)' % PREFIXES
-    # Match anything that begins by upper case after prefix (this is to filter in mongodb)
-    filter_regex = '(%s)\s+[^X\s\.]{3}' % PREFIXES
+    # match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)' % PREFIXES
+    match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)(\s+)?([A-Z]\.)?' % PREFIXES
 
-    candidates = Advice.objects(__raw__={
-        '$or': [
-            {'subject': {
-                '$regex': filter_regex,
-                '$options': 'imx',
-            }},
-            {'content': {
-                '$regex': filter_regex,
-                '$options': 'imx',
-            }}
-        ]
-    })
 
     with open(filename, 'w') as csvfile:
         writer = csv.writer(csvfile)
@@ -264,13 +251,19 @@ def anon():
         writer.writerow(csv.ANON_HEADER)
         idx = 0
         n_replacements = 0
-        for idx, advice in enumerate(candidates, 1):
+        for idx, advice in enumerate(Advice.objects, 1):
             replace = []
             for possible_location in [advice['subject'], advice['content']]:
                 matches = re.findall(match_regex, possible_location)
                 if not matches:
                     continue
-                good_matches = [m[1] for m in matches]
+                good_matches = []
+                for m in matches:
+                    if len(m) == 4:  # We have a pseudonymized last name (p.ex. Isabelle L.)
+                        good_matches.append("{0}{1}{2}".format(m[1], m[2], m[3]))
+                    else:
+                        good_matches.append(m[1])
+
                 if not good_matches:
                     continue
                 replace += good_matches
@@ -282,7 +275,7 @@ def anon():
             echo('.' if idx % 50 else white(idx), nl=False)
         echo(white(idx) if idx % 50 else '')
 
-    success('Total: {0} candidates', idx)
+    # success('Total: {0} candidates', idx)
     success('Total: {0} replacements', n_replacements)
 
 
