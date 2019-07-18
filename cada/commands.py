@@ -32,7 +32,7 @@ CONTEXT_SETTINGS = {
     'help_option_names': ['-?', '-h', '--help'],
 }
 
-KNOWN_PREFIXES = ['M.', 'Mme', 'Monsieur', 'Madame', 'Mlle', 'Docteur', 'Dr', 'Mr', 'Maître', 'Me', 'Mademoiselle']
+KNOWN_PREFIXES = ['M\. ', 'Mme ', 'Monsieur', 'Madame', 'Mlle ', 'Docteur', 'Dr ', 'Mr ', 'Maître', 'Me ', 'Mademoiselle']
 
 PREFIXES = '|'.join([re.escape(p) for p in KNOWN_PREFIXES])
 click.disable_unicode_literals_warning = True
@@ -240,26 +240,30 @@ def anon():
     header(anon.__doc__)
     filename = 'urls_to_check.csv'
 
-    # Match all non XXX after prefix
-    filter_regex = r'(%s)\s+[^X\s\.]{3}' % PREFIXES
-
-    # Match anything that begins by upper case after prefix
+    # This regex is to match what is found by our mongodb query.
     match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)' % PREFIXES
+    # Match anything that begins by upper case after prefix (this is to filter in mongodb)
+    filter_regex = '(%s)\s+[^X\s\.]{3}' % PREFIXES
 
-    pipeline = [
-        {'$match': {'$or': [{'subject': {'$regex': filter_regex, '$options': 'imx'}},
-                            {'content': {'$regex': filter_regex, '$options': 'imx'}}]}},
+    candidates = Advice.objects(__raw__={
+        '$or': [
+            {'subject': {
+                '$regex': filter_regex,
+                '$options': 'imx',
+            }},
+            {'content': {
+                '$regex': filter_regex,
+                '$options': 'imx',
+            }}
+        ]
+    })
 
-        {'$match': {'$or': [{'subject': {'$regex': match_regex, '$options': 'mx'}},
-                            {'content': {'$regex': match_regex, '$options': 'mx'}}]}},
-    ]
-
-    candidates = Advice.objects.aggregate(*pipeline)
-
-    with open(filename, 'wb') as csvfile:
+    with open(filename, 'w') as csvfile:
         writer = csv.writer(csvfile)
         # Generate header
         writer.writerow(csv.ANON_HEADER)
+        idx = 0
+        n_replacements = 0
         for idx, advice in enumerate(candidates, 1):
             replace = []
             for possible_location in [advice['subject'], advice['content']]:
@@ -272,12 +276,15 @@ def anon():
                 replace += good_matches
             if not replace:
                 continue
+            n_replacements += 1
             replacements = get_replacements(replace)
             writer.writerow(csv.to_anon_row(advice, ','.join(replace), ','.join([replacements[n] for n in replace])))
             echo('.' if idx % 50 else white(idx), nl=False)
         echo(white(idx) if idx % 50 else '')
 
     success('Total: {0} candidates', idx)
+    success('Total: {0} replacements', n_replacements)
+
 
 
 @cli.command()
