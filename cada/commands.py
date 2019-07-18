@@ -4,6 +4,7 @@ import logging
 import pkg_resources
 import shutil
 import sys
+import re
 
 from glob import iglob
 from os.path import exists
@@ -31,6 +32,9 @@ CONTEXT_SETTINGS = {
     'help_option_names': ['-?', '-h', '--help'],
 }
 
+KNOWN_PREFIXES = ['M.', 'Mme', 'Monsieur', 'Madame', 'Mlle', 'Docteur', 'Dr', 'Mr', 'Maître', 'Me', 'Mademoiselle']
+
+PREFIXES = '|'.join([re.escape(p) for p in KNOWN_PREFIXES])
 click.disable_unicode_literals_warning = True
 
 
@@ -45,6 +49,21 @@ def safe_unicode(string):
 
 def color(name, **kwargs):
     return lambda t: click.style(safe_unicode(str(t)), fg=name, **kwargs)
+
+
+def get_replacements(candidates, starting_letter='X'):
+    if len(candidates) == 1:
+        return {candidates[0]: starting_letter * 3}
+
+    unique_names = set(candidates)
+    replacement = {}
+    chosen_letter = starting_letter
+    for name in unique_names:
+        if ord(chosen_letter) > ord('Z'):
+            chosen_letter = 'A'
+        replacement[name] = chr(ord(chosen_letter)) * 3
+        chosen_letter = chr(ord(chosen_letter) + 1)
+    return replacement
 
 
 green = color('green', bold=True)
@@ -221,30 +240,44 @@ def anon():
     header(anon.__doc__)
     filename = 'urls_to_check.csv'
 
-    candidates = Advice.objects(__raw__={
-        '$or': [
-            {'subject': {
-                '$regex': '(Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}',
-                '$options': 'imx',
-            }},
-            {'content': {
-                '$regex': '(Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}',
-                '$options': 'imx',
-            }}
-        ]
-    })
+    # Match all non XXX after prefix
+    filter_regex = r'(%s)\s+[^X\s\.]{3}' % PREFIXES
+
+    # Match anything that begins by upper case after prefix
+    match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)' % PREFIXES
+
+    pipeline = [
+        {'$match': {'$or': [{'subject': {'$regex': filter_regex, '$options': 'imx'}},
+                            {'content': {'$regex': filter_regex, '$options': 'imx'}}]}},
+
+        {'$match': {'$or': [{'subject': {'$regex': match_regex, '$options': 'mx'}},
+                            {'content': {'$regex': match_regex, '$options': 'mx'}}]}},
+    ]
+
+    candidates = Advice.objects.aggregate(*pipeline)
 
     with open(filename, 'wb') as csvfile:
         writer = csv.writer(csvfile)
         # Generate header
         writer.writerow(csv.ANON_HEADER)
-
         for idx, advice in enumerate(candidates, 1):
-            writer.writerow(csv.to_anon_row(advice))
+            replace = []
+            for possible_location in [advice['subject'], advice['content']]:
+                matches = re.findall(match_regex, possible_location)
+                if not matches:
+                    continue
+                good_matches = [m[1] for m in matches]
+                if not good_matches:
+                    continue
+                replace += good_matches
+            if not replace:
+                continue
+            replacements = get_replacements(replace)
+            writer.writerow(csv.to_anon_row(advice, ','.join(replace), ','.join([replacements[n] for n in replace])))
             echo('.' if idx % 50 else white(idx), nl=False)
         echo(white(idx) if idx % 50 else '')
 
-    success('Total: {0} candidates', len(candidates))
+    success('Total: {0} candidates', idx)
 
 
 @cli.command()
@@ -266,7 +299,7 @@ def fix(csvfile):
             continue
 
         for source, dest in zip(sources, dests):
-            echo('{0}: Replace {1} with {2}', white(id), white(source), white(dest))
+            echo('{0}: Replace {1} with {2}'.format(white(id), white(source), white(dest)))
             advice.subject = advice.subject.replace(source, dest)
             advice.content = advice.content.replace(source, dest)
 
