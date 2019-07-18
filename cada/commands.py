@@ -294,7 +294,7 @@ def fix(csvfile):
     header('Apply fixes from {}', csvfile.name)
     bads = []
     reader = csv.reader(csvfile)
-    reader.next()  # Skip header
+    reader.__next__()  # Skip header
 
     for id, _, sources, dests in reader:
         advice = Advice.objects.get(id=id)
