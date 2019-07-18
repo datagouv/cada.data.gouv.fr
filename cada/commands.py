@@ -241,7 +241,7 @@ def anon():
     header(anon.__doc__)
     filename = 'urls_to_check.csv'
 
-    # This regex is to match what is found by our mongodb query.
+    # This regex is to match names after the prefixes.
     match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)(\s+)?([A-Z]\.)?' % PREFIXES
 
     with open(filename, 'w') as csvfile:
