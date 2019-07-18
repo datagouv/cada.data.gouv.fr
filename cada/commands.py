@@ -32,7 +32,8 @@ CONTEXT_SETTINGS = {
     'help_option_names': ['-?', '-h', '--help'],
 }
 
-KNOWN_PREFIXES = ['M\. ', 'Mme ', 'Monsieur', 'Madame', 'Mlle ', 'Docteur', 'Dr ', 'Mr ', 'Maître', 'Me ', 'Mademoiselle']
+KNOWN_PREFIXES = [r'M\. ', 'Mme ', 'Monsieur', 'Madame', 'Mlle ', 'Docteur', 'Dr ', 'Mr ', 'Maître', 'Me ',
+                  'Mademoiselle']
 
 PREFIXES = '|'.join([re.escape(p) for p in KNOWN_PREFIXES])
 click.disable_unicode_literals_warning = True
@@ -244,7 +245,6 @@ def anon():
     # match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)' % PREFIXES
     match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)(\s+)?([A-Z]\.)?' % PREFIXES
 
-
     with open(filename, 'w') as csvfile:
         writer = csv.writer(csvfile)
         # Generate header
@@ -277,7 +277,6 @@ def anon():
 
     # success('Total: {0} candidates', idx)
     success('Total: {0} replacements', n_replacements)
-
 
 
 @cli.command()
