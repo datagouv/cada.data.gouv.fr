@@ -242,7 +242,6 @@ def anon():
     filename = 'urls_to_check.csv'
 
     # This regex is to match what is found by our mongodb query.
-    # match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)' % PREFIXES
     match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)(\s+)?([A-Z]\.)?' % PREFIXES
 
     with open(filename, 'w') as csvfile:
