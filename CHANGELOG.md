@@ -1,4 +1,4 @@
-## Current (in progress)
+## 1.0.0 (2019-07-19)
 
 - Add a `burnthemall` command [#25](https://github.com/etalab/cada.data.gouv.fr/pull/25)
 - Use `tqdm` for major commands with loops [#25](https://github.com/etalab/cada.data.gouv.fr/pull/25)
