@@ -1,3 +1,7 @@
+## Current (in progress)
+
+- Nothing yet
+
 ## 1.0.0 (2019-07-19)
 
 - Add a `burnthemall` command [#25](https://github.com/etalab/cada.data.gouv.fr/pull/25)
