@@ -12,6 +12,8 @@ from os.path import exists
 from webassets.script import CommandLineEnvironment
 from flask.cli import FlaskGroup, shell_command, run_command, routes_command
 
+from tqdm import tqdm
+
 from cada import create_app, csv
 from cada.assets import assets
 from cada.models import Advice
@@ -172,23 +174,19 @@ def load(patterns, full_reindex):
             echo('Loading {}'.format(white(filename)))
             with open(filename) as f:
                 reader = csv.reader(f)
+
                 # Skip header
                 reader.__next__()
-                for idx, row in enumerate(reader, 1):
+
+                for row in tqdm(list(reader)):
                     try:
                         advice = csv.from_row(row)
-                        skipped = False
                         if not full_reindex:
                             index(advice)
-                        echo('.' if idx % 50 else white(idx), nl=False)
-                    except Exception:
-                        echo(cyan('s') if idx % 50 else white('{0}(s)'.format(idx)), nl=False)
-                        skipped = True
-                if skipped:
-                    echo(white('{}(s)'.format(idx)) if idx % 50 else '')
-                else:
-                    echo(white(idx) if idx % 50 else '')
-                success('Processed {0} rows'.format(idx))
+                    except Exception as e:
+                        log.warning(e)
+
+                success('Processed {0} rows'.format(''))
     if full_reindex:
         reindex()
 
@@ -202,13 +200,12 @@ def reindex():
         es.indices.delete(index=es.index_name)
     es.initialize()
 
-    idx = 0
-    for idx, advice in enumerate(Advice.objects, 1):
+    for advice in tqdm(Advice.objects):
         index(advice)
-        echo('.' if idx % 50 else white(idx), nl=False)
-    echo(white(idx) if idx % 50 else '')
+
     es.indices.refresh(index=es.index_name)
-    success('Indexed {0} advices', idx)
+
+    success('Indexed {0} advices', len(Advice.objects))
 
 
 @cli.command()
@@ -308,3 +305,11 @@ def fix(csvfile):
         echo('{0}: Replacements length not matching', white(id))
 
     success('Done')
+
+
+@cli.command()
+def burnthemall():
+    '''Delete all advices'''
+
+    Advice.objects.delete()
+    echo('{0} All advices have been deleted', green(OK))
