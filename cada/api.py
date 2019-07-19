@@ -58,7 +58,6 @@ def init_app(app):
 
 
 def sample_search():
-
     r = requests.get(url_for('api.search', q='Paris', sort='session desc', page_size=3, _external=True))
 
     return r.json()
