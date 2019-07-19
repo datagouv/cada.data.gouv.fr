@@ -163,8 +163,8 @@ def load(patterns, full_reindex):
                         advice = csv.from_row(row)
                         if not full_reindex:
                             index(advice)
-                    except Exception:
-                        print(WARNING)
+                    except Exception as e:
+                        log.warning(e)
 
                 success('Processed {0} rows'.format(''))
     if full_reindex:
