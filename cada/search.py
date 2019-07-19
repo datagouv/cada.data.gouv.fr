@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 MAPPING = {
     'properties': {
-        'id': {'type': 'text', 'index': 'false'},
+        'id': {'type': 'text', 'index': 'true'},
         'administration': {
             'type': 'text',
             'analyzer': 'fr_analyzer',
@@ -68,6 +68,7 @@ MAPPING = {
 }
 
 FIELDS = (
+    'id^5',
     'subject^4',
     'content^3',
     'administration',
