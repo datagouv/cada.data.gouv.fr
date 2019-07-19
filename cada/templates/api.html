@@ -18,9 +18,13 @@
 <p>Cette API permet l'accès direct à un avis CADA par son identifiant</p>
 
 <h3>Exemple</h3>
-<p>Voici un exemple d'accès direct à l'avis CADA n°{{ sample.id }}</p>
-<p><code>GET {{ url_for('api.display', id=sample.id) }}</code></p>
-<p><pre data-api="{{ url_for('api.display', id=sample.id) }}"></pre></p>
+<p>Voici un exemple d'accès direct à l'avis CADA n°{{ sample.advice.id }}</p>
+<p><code>GET {{ url_for('api.display', id=sample.advice.id) }}</code></p>
+<p>
+    <pre data-api="{{ url_for('api.display', id=sample.id) }}">
+        {{- sample.advice | _serialize | pretty_json if sample.advice }}
+    </pre>
+</p>
 
 <h2>Recherche</h2>
 <p>La recherche accepte les paramètres d'URL suivants:</p>
@@ -63,7 +67,11 @@
 <h3>Exemple</h3>
 <p>Voici un exemple de recherche sur le terme "Paris", triée par dates de séance décroissantes et n'affichant que les 3 premiers éléments</p>
 <p><code>GET {{ url_for('api.search', q='Paris', sort='session desc', page_size=3) }}</code></p>
-<p><pre data-api="{{ url_for('api.search', q='Paris', sort='session desc', page_size=3) }}"></pre></p>
+<p>
+    <pre data-api="{{ url_for('api.search', q='Paris', sort='session desc', page_size=3) }}">
+        {{- sample.search | pretty_json }}
+    </pre>
+</p>
 {% endblock %}
 
 

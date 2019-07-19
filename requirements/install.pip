@@ -8,3 +8,4 @@ elasticsearch==7.0.2
 flask-mongoengine==0.9.5
 unicodecsv==0.14.1
 cssmin==0.2.0
+requests==2.22.0

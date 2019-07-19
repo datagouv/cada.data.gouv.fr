@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 MAPPING = {
     'properties': {
-        'id': {'type': 'text', 'index': 'false'},
+        'id': {'type': 'text', 'index': 'true'},
         'administration': {
             'type': 'text',
             'analyzer': 'fr_analyzer',
@@ -153,13 +153,14 @@ es = ElasticSearch()
 
 def build_text_queries():
     if not request.args.get('q'):
-        return []
+        return ''
     query_string = request.args.get('q')
     if isinstance(query_string, (list, tuple)):
         query_string = ' '.join(query_string)
     return [{
-        'multi_match': {
+        'query_string': {
             'query': query_string,
+            'default_operator': 'AND',
             'fields': FIELDS,
             'analyzer': 'fr_analyzer',
         }
