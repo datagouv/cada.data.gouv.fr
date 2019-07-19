@@ -5,11 +5,11 @@ from flask import url_for
 from cada import search
 from cada.models import PARTS
 
-
+@pytest.mark.usefixtures('live_server')
 def test_api_doc_empty(client):
     assert client.get(url_for('api.doc')).status_code == 200
 
-
+@pytest.mark.usefixtures('live_server')
 def test_api_doc_wih_advices(client, advice_factory):
     advice_factory.create_batch(3)
     assert client.get(url_for('api.doc')).status_code == 200
