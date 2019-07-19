@@ -4,6 +4,7 @@ import logging
 import pkg_resources
 import shutil
 import sys
+import re
 
 from glob import iglob
 from os.path import exists
@@ -31,6 +32,10 @@ CONTEXT_SETTINGS = {
     'help_option_names': ['-?', '-h', '--help'],
 }
 
+KNOWN_PREFIXES = [r'M\. ', 'Mme ', 'Monsieur', 'Madame', 'Mlle ', 'Docteur', 'Dr ', 'Mr ', 'Maître', 'Me ',
+                  'Mademoiselle']
+
+PREFIXES = '|'.join([re.escape(p) for p in KNOWN_PREFIXES])
 click.disable_unicode_literals_warning = True
 
 
@@ -45,6 +50,21 @@ def safe_unicode(string):
 
 def color(name, **kwargs):
     return lambda t: click.style(safe_unicode(str(t)), fg=name, **kwargs)
+
+
+def get_replacements(candidates, starting_letter='X'):
+    if len(candidates) == 1:
+        return {candidates[0]: starting_letter * 3}
+
+    unique_names = set(candidates)
+    replacement = {}
+    chosen_letter = starting_letter
+    for name in unique_names:
+        if ord(chosen_letter) > ord('Z'):
+            chosen_letter = 'A'
+        replacement[name] = chr(ord(chosen_letter)) * 3
+        chosen_letter = chr(ord(chosen_letter) + 1)
+    return replacement
 
 
 green = color('green', bold=True)
@@ -221,30 +241,41 @@ def anon():
     header(anon.__doc__)
     filename = 'urls_to_check.csv'
 
-    candidates = Advice.objects(__raw__={
-        '$or': [
-            {'subject': {
-                '$regex': '(Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}',
-                '$options': 'imx',
-            }},
-            {'content': {
-                '$regex': '(Monsieur|Madame|Docteur|Mademoiselle)\s+[^X\s\.]{3}',
-                '$options': 'imx',
-            }}
-        ]
-    })
+    # This regex is to match names after the prefixes.
+    match_regex = r'(%s)\s+([A-Z][^X\s\.\-\,]\w+)(\s+)?([A-Z]\.)?' % PREFIXES
 
-    with open(filename, 'wb') as csvfile:
+    with open(filename, 'w') as csvfile:
         writer = csv.writer(csvfile)
         # Generate header
         writer.writerow(csv.ANON_HEADER)
+        idx = 0
+        n_replacements = 0
+        for idx, advice in enumerate(Advice.objects, 1):
+            replace = []
+            for possible_location in [advice['subject'], advice['content']]:
+                matches = re.findall(match_regex, possible_location)
+                if not matches:
+                    continue
+                good_matches = []
+                for m in matches:
+                    if len(m) == 4:  # We have a pseudonymized last name (p.ex. Isabelle L.)
+                        good_matches.append("{0}{1}{2}".format(m[1], m[2], m[3]))
+                    else:
+                        good_matches.append(m[1])
 
-        for idx, advice in enumerate(candidates, 1):
-            writer.writerow(csv.to_anon_row(advice))
+                if not good_matches:
+                    continue
+                replace += good_matches
+            if not replace:
+                continue
+            n_replacements += 1
+            replacements = get_replacements(replace)
+            writer.writerow(csv.to_anon_row(advice, ','.join(replace), ','.join([replacements[n] for n in replace])))
             echo('.' if idx % 50 else white(idx), nl=False)
         echo(white(idx) if idx % 50 else '')
 
-    success('Total: {0} candidates', len(candidates))
+    # success('Total: {0} candidates', idx)
+    success('Total: {0} replacements', n_replacements)
 
 
 @cli.command()
@@ -254,7 +285,7 @@ def fix(csvfile):
     header('Apply fixes from {}', csvfile.name)
     bads = []
     reader = csv.reader(csvfile)
-    reader.next()  # Skip header
+    reader.__next__()  # Skip header
 
     for id, _, sources, dests in reader:
         advice = Advice.objects.get(id=id)
@@ -266,7 +297,7 @@ def fix(csvfile):
             continue
 
         for source, dest in zip(sources, dests):
-            echo('{0}: Replace {1} with {2}', white(id), white(source), white(dest))
+            echo('{0}: Replace {1} with {2}'.format(white(id), white(source), white(dest)))
             advice.subject = advice.subject.replace(source, dest)
             advice.content = advice.content.replace(source, dest)
 
