@@ -69,7 +69,7 @@
 <p><code>GET {{ url_for('api.search', q='Paris', sort='session desc', page_size=3) }}</code></p>
 <p>
     <pre data-api="{{ url_for('api.search', q='Paris', sort='session desc', page_size=3) }}">
-    {{- sample.search | pretty_json }}
+        {{- sample.search | pretty_json }}
     </pre>
 </p>
 {% endblock %}
