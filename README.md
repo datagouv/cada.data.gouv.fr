@@ -10,14 +10,14 @@ This is the engine behind https://cada.data.gouv.fr.
 
 ## Compatibility
 
-CADA has been tested on Python 2.7, MongoDB 3.2 and ElasticSearch 2.4.
+CADA has been tested on Python 3.7, MongoDB 4.1 and ElasticSearch 7.2.
 
 The [ElasticSearch ICU Analysis plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/2.4/analysis-icu.html) is required.
 
 You can install it with:
 
 ```console
-bin/plugin install analysis-icu
+elasticsearch-plugin install analysis-icu
 ```
 
 ## Installation
