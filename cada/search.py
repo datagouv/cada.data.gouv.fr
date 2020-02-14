@@ -55,7 +55,14 @@ MAPPING = {
                 'keyword': {'type': 'keyword'}
             }
         },
-        'meanings': {'type': 'text', 'index': 'false'},
+        'meanings': {
+            'type': 'text',
+            'index': 'false',
+            'fields': {
+                'raw': {'type': 'text', 'index': 'false'},
+                'keyword': {'type': 'keyword'}
+            }
+        },
         'part': {'type': 'short'},
         'content': {
             'type': 'text',
