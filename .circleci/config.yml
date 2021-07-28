@@ -1,14 +1,14 @@
 ---
-version: 2
+version: 2.1
 
 jobs:
   build:
     docker:
-      - image: python:3.6
+      - image: python:3.7
       - image: mongo:4.1
       - image: etalab/cada-elasticsearch:7.2
         environment:
-            discovery.type: single-node
+          discovery.type: single-node
 
     steps:
       - checkout
@@ -20,9 +20,9 @@ jobs:
           command: export BASE_BRANCH=$(base_branch)
       - restore_cache:
           keys:
-          - py-cache-v0-{{ arch }}-{{ checksum "python.deps" }}
-          - py-cache-v0-{{ arch }}-{{ .Branch }}
-          - py-cache-v0-{{ arch }}-master
+            - py-cache-v0-{{ arch }}-{{ checksum "python.deps" }}
+            - py-cache-v0-{{ arch }}-{{ .Branch }}
+            - py-cache-v0-{{ arch }}-master
       - run:
           name: Install python dependencies
           command: |
@@ -33,11 +33,11 @@ jobs:
       - save_cache:
           key: py-cache-v0-{{ arch }}-{{ checksum "python.deps" }}
           paths:
-          - venv
+            - venv
       - save_cache:
           key: py-cache-v0-{{ arch }}-{{ .Branch }}
           paths:
-          - venv
+            - venv
       - run:
           name: Run tests
           command: |
