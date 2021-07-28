@@ -176,7 +176,6 @@ def build_text_queries():
                 "query": query_string,
                 "default_operator": "AND",
                 "fields": FIELDS,
-                "analyzer": "fr_analyzer",
             }
         }
     ]
