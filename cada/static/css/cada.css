@@ -1,7 +1,8 @@
-html, body {
-   margin:0;
-   padding:0;
-   height:100%;
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
 ul.search-result li {
@@ -31,7 +32,7 @@ ul.search-result li .subtitle span {
 .lead.subject {
     font-size: 1.1em;
     font-style: italic;
-    font-weight: bold
+    font-weight: bold;
 }
 
 .label .close-icon {
@@ -85,8 +86,9 @@ ul.search-result li .subtitle span {
     list-style: none;
 }
 
-.tags:before, .tags:after {
-    content: '';
+.tags:before,
+.tags:after {
+    content: "";
     display: table;
 }
 
@@ -106,20 +108,21 @@ ul.search-result li .subtitle span {
 }
 
 .tags li:after {
-    content: '';
+    content: "";
     z-index: 2;
     position: absolute;
     top: 10px;
     right: -2px;
     width: 5px;
     height: 6px;
-    opacity: .95;
+    opacity: 0.95;
     background: #eb6b22;
     border-radius: 3px 0 0 3px;
     box-shadow: inset 1px 0 #99400e;
 }
 
-.tags a, .tags span {
+.tags a,
+.tags span {
     display: block;
     box-sizing: border-box;
 }
@@ -138,13 +141,15 @@ ul.search-result li .subtitle span {
     border-color: #dadada #d2d2d2 #c5c5c5;
     border-radius: 3px 0 0 3px;
     background-image: linear-gradient(to bottom, #fcfcfc, #f0f0f0);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+        0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .tags a:hover span {
     padding: 0 7px 0 6px;
     max-width: 40px;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15), 1px 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+        1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .tags span {
@@ -163,7 +168,7 @@ ul.search-result li .subtitle span {
     border: 1px solid;
     border-color: #d15813 #c85412 #bf5011;
     border-radius: 0 2px 2px 0;
-    opacity: .95;
+    opacity: 0.95;
     background-image: linear-gradient(to bottom, #ed7b39, #df5e14);
     transition: 0.3s ease-out;
     transition-property: padding, max-width;
@@ -178,7 +183,6 @@ ul.search-result li .subtitle span {
     border-color: #3591cd #318cc7 #2f86be;
     background-image: linear-gradient(to bottom, #6aaeda, #4298d0);
 }
-
 
 /**
  * Tree list items
@@ -211,6 +215,9 @@ ul.search-result li .subtitle span {
     margin-left: 10px;
 }
 
+.issue {
+    margin-top: 2rem;
+}
 
 .page {
     min-height: 450px;
@@ -284,19 +291,19 @@ main > div {
 }
 
 main.wrapper {
-   min-height:100%;
-   position: relative;
-   margin: 0;
-   padding: 0;
+    min-height: 100%;
+    position: relative;
+    margin: 0;
+    padding: 0;
 }
 
 section.footer {
-   width:100%;
-   min-height: 241px;   /* Height of the footer */
+    width: 100%;
+    min-height: 241px; /* Height of the footer */
 }
 
-
-.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
     color: white;
 }
 

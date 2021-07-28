@@ -69,7 +69,7 @@
             </div>
             <div class="panel-body">
                 {% for meaning in advice.meanings %}
-                <a 
+                <a
                 	{% if "défavorable" in meaning.lower() %}
                     class="label label-danger"
                     {% elif "favorable" in meaning.lower() %}
@@ -90,42 +90,16 @@
                 <a href="{{url_for('site.search', tag=tag) }}" class="label label-primary">{{ tag }}</a>
                 {% endfor %}
             </div>
+        </div>
 
-            <a href
+        <div class="issue">
+            <a
                 class="btn btn-xs btn-info btn-block"
                 title="Signaler un défaut d'anonymisation"
-                data-toggle="modal" data-target="#alert-modal">
+                href="https://support.data.gouv.fr">
                 Signaler un défaut d'anonymisation
             </a>
-    </aside>
-</div>
-{% endblock %}
-
-{% block extra_js %}
-{# Anonimization error signalization modal #}
-<div class="modal fade" id="alert-modal" tabindex="-1" role="dialog" aria-labelledby="alert-modal-label" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="alert-modal-label">Signaler un défaut d'anonymisation</h4>
-            </div>
-            <div class="modal-body">
-                <p>
-                    Aidez à détecter et corriger les défauts d'anonymisation en les signalant avec ce formulaire.
-                </p>
-                <form id="alert-form" method="POST"
-                    action="{{ url_for('site.alert', id=advice.id) }}">
-                    {{ form.csrf_token }}
-                    <textarea name="details" class="form-control" rows="3" required=True
-                        placeholder="Saisissez éventuellement quelques informations complémentaires sur l'erreur"></textarea>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" form="alert-form" class="btn btn-primary">Signaler</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-            </div>
         </div>
-    </div>
+    </aside>
 </div>
 {% endblock %}
