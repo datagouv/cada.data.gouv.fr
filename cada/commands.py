@@ -5,6 +5,7 @@ import pkg_resources
 import shutil
 import sys
 import re
+import requests
 
 from glob import iglob
 from os.path import exists
@@ -214,6 +215,33 @@ def load(patterns, full_reindex):
                 success("Processed {0} rows", len(advices))
     if full_reindex:
         reindex()
+
+
+@cli.command()
+@click.argument("url")
+def load_url(url):
+    """
+    Load a remote csv file
+    """
+    header("Loading remote csv file")
+    echo(f"🌏 URL: {url}")
+
+    r = requests.get(url)
+    text = r.content.decode("utf-8")
+    reader = csv.reader(text.splitlines())
+
+    # Skip header
+    reader.__next__()
+    advices = list(reader)
+
+    for row in tqdm(advices):
+        try:
+            advice = csv.from_row(row)
+            index(advice)
+        except Exception as e:
+            log.warning(e)
+
+    success("Processed {0} rows", len(advices))
 
 
 @cli.command()
