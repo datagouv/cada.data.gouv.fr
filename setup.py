@@ -61,7 +61,7 @@ setup(
     zip_safe=False,
     install_requires=install_requires,
     setup_requires=["setuptools>=38.6.0"],
-    python_requires=">=3.6.*",
+    python_requires=">=3.6",
     extras_require={
         "sentry": pip("sentry.pip"),
         "test": pip("test.pip"),

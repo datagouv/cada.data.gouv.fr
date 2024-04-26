@@ -11,3 +11,6 @@ unicodecsv==0.14.1
 cssmin==0.2.0
 tqdm==4.32.1
 requests==2.22.0
+markupsafe==2.0.1
+itsdangerous==2.0.1
+WTForms==2.3.3
