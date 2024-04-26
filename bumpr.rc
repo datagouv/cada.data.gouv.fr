@@ -1,6 +1,6 @@
 [bumpr]
 file = setup.py
-regex = \s{4}version='(?P<version>.+?)',
+regex = \s{4}version="(?P<version>.+?)",
 vcs = git
 commit = true
 tag = true
