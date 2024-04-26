@@ -1,4 +1,4 @@
-## Current (in progress)
+## 1.0.1 (2024-04-26)
 
 - Nothing yet
 

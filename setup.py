@@ -49,7 +49,7 @@ install_requires = pip("install.pip")
 
 setup(
     name="cada",
-    version="1.0.1.dev",
+    version="1.0.1",
     description="Search and consult CADA advices",
     long_description=long_description,
     long_description_content_type="text/markdown",
